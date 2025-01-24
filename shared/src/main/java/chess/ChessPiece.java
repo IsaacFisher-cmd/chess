@@ -71,3 +71,39 @@ public class ChessPiece {
         return Objects.hash(teamColor, type);
     }
 }
+
+class King extends ChessPiece {
+    public King(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
+
+class Queen extends ChessPiece {
+    public Queen(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
+
+class Bishop extends ChessPiece {
+    public Bishop(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
+
+class Rook extends ChessPiece {
+    public Rook(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
+
+class Knight extends ChessPiece {
+    public Knight(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
+
+class Pawn extends ChessPiece {
+    public Pawn(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
+        super(teamColor, type);
+    }
+}
