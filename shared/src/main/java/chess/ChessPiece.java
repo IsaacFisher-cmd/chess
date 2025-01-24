@@ -1,5 +1,7 @@
 package chess;
 
+import chess.MoveCalc;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -54,7 +56,28 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        Collection<ChessMove> moves = new ArrayList<>();
+        switch (type) {
+            case KING:
+                int [][] kingMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
+                moves = MoveCalc.moveList(board, myPosition, kingMoveType, teamColor, false);
+            case QUEEN:
+                int [][] queenMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
+                moves = MoveCalc.moveList(board, myPosition, queenMoveType, teamColor, false);
+            case BISHOP:
+                int [][] bishopMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
+                moves = MoveCalc.moveList(board, myPosition, bishopMoveType, teamColor, false);
+            case KNIGHT:
+                int [][] knightMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
+                moves = MoveCalc.moveList(board, myPosition, knightMoveType, teamColor, false);
+            case ROOK:
+                int [][] rookMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
+                moves = MoveCalc.moveList(board, myPosition, rookMoveType, teamColor, false);
+            case PAWN:
+                int [][] pawnMoveType = {};
+                moves = MoveCalc.moveList(board, myPosition, pawnMoveType, teamColor, true);
+        }
+        return moves;
     }
 
     @Override
@@ -69,41 +92,5 @@ public class ChessPiece {
     @Override
     public int hashCode() {
         return Objects.hash(teamColor, type);
-    }
-}
-
-class King extends ChessPiece {
-    public King(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
-    }
-}
-
-class Queen extends ChessPiece {
-    public Queen(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
-    }
-}
-
-class Bishop extends ChessPiece {
-    public Bishop(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
-    }
-}
-
-class Rook extends ChessPiece {
-    public Rook(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
-    }
-}
-
-class Knight extends ChessPiece {
-    public Knight(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
-    }
-}
-
-class Pawn extends ChessPiece {
-    public Pawn(ChessGame.TeamColor teamColor, ChessPiece.PieceType type) {
-        super(teamColor, type);
     }
 }
