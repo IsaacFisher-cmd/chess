@@ -157,19 +157,37 @@ public class ChessPiece {
                 }
                 break;
             case PAWN:
-                
-                if (teamColor == ChessGame.TeamColor.WHITE){
-                    int [][] pawnMoveType = {{1, 0}, {1, -1}, {1, 1}, {2, 0}};
-                    ChessPosition testPosition = new ChessPosition(row + 1, col);
-                    if (OnBoard(testPosition)) {
-                        if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        }
-                    }
-                } else {
+                ChessPiece.PieceType[] promotions = new ChessPiece.PieceType[]{null};
 
+                int direction = -1;
+                if (teamColor == ChessGame.TeamColor.WHITE){
+                    direction = 1;
+                }
+
+                if((direction == 1 && row == 7) || (direction == -1 && row == 2)){
+                    promotions = new ChessPiece.PieceType[]{ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN};
+                }
+
+                for (ChessPiece.PieceType promotion : promotions) {
+                    ChessPosition forwardMove = new ChessPosition(row + direction, col);
+                    if (OnBoard(forwardMove) && board.getPiece(forwardMove) == null) {
+                        moves.add(new ChessMove(myPosition, forwardMove, promotion));
+                    }
+
+                    ChessPosition leftCap = new ChessPosition(row + direction, col - 1);
+                    if (OnBoard(leftCap) && board.getPiece(leftCap) != null && board.getPiece(leftCap).getTeamColor() != teamColor) {
+                        moves.add(new ChessMove(myPosition, leftCap, promotion));
+                    }
+
+                    ChessPosition rightCap = new ChessPosition(row + direction, col + 1);
+                    if (OnBoard(rightCap) && board.getPiece(rightCap) != null && board.getPiece(rightCap).getTeamColor() != teamColor) {
+                        moves.add(new ChessMove(myPosition, rightCap, promotion));
+                    }
+
+                    ChessPosition doubleMove = new ChessPosition(row + direction*2, col);
+                    if (OnBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7)) && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
+                        moves.add(new ChessMove(myPosition, doubleMove, promotion));
+                    }
                 }
 
                 break;
