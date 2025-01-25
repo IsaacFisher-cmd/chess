@@ -58,7 +58,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        ArrayList<ArrayList<Integer>> testMoves = new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         switch (type) {
@@ -158,7 +157,20 @@ public class ChessPiece {
                 }
                 break;
             case PAWN:
-                int [][] pawnMoveType = {};
+                
+                if (teamColor == ChessGame.TeamColor.WHITE){
+                    int [][] pawnMoveType = {{1, 0}, {1, -1}, {1, 1}, {2, 0}};
+                    ChessPosition testPosition = new ChessPosition(row + 1, col);
+                    if (OnBoard(testPosition)) {
+                        if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        }
+                    }
+                } else {
+
+                }
 
                 break;
         }
