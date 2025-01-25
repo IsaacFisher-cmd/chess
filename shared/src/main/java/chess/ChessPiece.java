@@ -1,7 +1,5 @@
 package chess;
 
-import chess.MoveCalc;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -48,6 +46,9 @@ public class ChessPiece {
         return type;
     }
 
+    static boolean OnBoard(ChessPosition position) {
+        return (position.getRow() >= 1 && position.getColumn() >= 1 && position.getRow() <= 8 && position.getColumn() <= 8);
+    }
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -57,25 +58,109 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> testMoves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
         switch (type) {
             case KING:
                 int [][] kingMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                moves = MoveCalc.moveList(board, myPosition, kingMoveType, teamColor, false);
+                for (int[] direction : kingMoveType) {
+                    ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
+                    if (OnBoard(testPosition)) {
+                        if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        }
+                    }
+                }
+                break;
             case QUEEN:
                 int [][] queenMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                moves = MoveCalc.moveList(board, myPosition, queenMoveType, teamColor, false);
+                for (int[] direction : queenMoveType) {
+                    boolean blocked = false;
+                    int i = 1;
+                    while (!blocked) {
+                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
+                        if (!OnBoard(testPosition)) {
+                            blocked = true;
+                        } else if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                            blocked = true;
+                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
+                            blocked = true;
+                        } else {
+                            blocked = true;
+                        }
+                        i++;
+                    }
+                }
+                break;
             case BISHOP:
-                int [][] bishopMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                moves = MoveCalc.moveList(board, myPosition, bishopMoveType, teamColor, false);
+                int [][] bishopMoveType = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
+                for (int[] direction : bishopMoveType) {
+                    boolean blocked = false;
+                    int i = 1;
+                    while (!blocked) {
+                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
+                        if (!OnBoard(testPosition)) {
+                            blocked = true;
+                        } else if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                            blocked = true;
+                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
+                            blocked = true;
+                        } else {
+                            blocked = true;
+                        }
+                        i++;
+                    }
+                }
+                break;
             case KNIGHT:
-                int [][] knightMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                moves = MoveCalc.moveList(board, myPosition, knightMoveType, teamColor, false);
+                int [][] knightMoveType = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
+                for (int[] direction : knightMoveType) {
+                    ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
+                    if (OnBoard(testPosition)) {
+                        if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        }
+                    }
+                }
+                break;
             case ROOK:
-                int [][] rookMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                moves = MoveCalc.moveList(board, myPosition, rookMoveType, teamColor, false);
+                int [][] rookMoveType = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+                for (int[] direction : rookMoveType) {
+                    boolean blocked = false;
+                    int i = 1;
+                    while (!blocked) {
+                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
+                        if (!OnBoard(testPosition)) {
+                            blocked = true;
+                        } else if (board.getPiece(testPosition) == null) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                            moves.add(new ChessMove(myPosition, testPosition, null));
+                            blocked = true;
+                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
+                            blocked = true;
+                        } else {
+                            blocked = true;
+                        }
+                        i++;
+                    }
+                }
+                break;
             case PAWN:
                 int [][] pawnMoveType = {};
-                moves = MoveCalc.moveList(board, myPosition, pawnMoveType, teamColor, true);
+
+                break;
         }
         return moves;
     }
