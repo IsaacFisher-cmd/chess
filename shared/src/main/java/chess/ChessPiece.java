@@ -189,7 +189,6 @@ public class ChessPiece {
                         moves.add(new ChessMove(myPosition, doubleMove, promotion));
                     }
                 }
-
                 break;
         }
         return moves;
