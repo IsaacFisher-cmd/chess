@@ -65,9 +65,11 @@ public class ChessGame {
             ChessPiece temp = gameBoard.getPiece(move.getEndPosition());
             gameBoard.addPiece(startPosition, null);
             gameBoard.addPiece(move.getEndPosition(), thisPiece);
+            //see if it puts them in check, if not add it
             if(!isInCheck(thisPiece.getTeamColor())){
                 validMoves.add(move);
             }
+            //reset the board
             gameBoard.addPiece(move.getEndPosition(), temp);
             gameBoard.addPiece(startPosition, thisPiece);
         }
