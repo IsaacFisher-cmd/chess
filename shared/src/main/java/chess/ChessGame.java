@@ -149,6 +149,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        //see if there are moves, if not then checkmate
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition position = new ChessPosition(i, j);
@@ -172,23 +173,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //basically we are going to see if we have any moves, if we do false and otherwise true
+        //basically we are going to see if we are in checkmate without check
         if(isInCheck(teamColor)){
             return false;
         }
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = gameBoard.getPiece(position);
-                if(piece != null && piece.getTeamColor() == teamColor){
-                    Collection<ChessMove> moves = validMoves(position);
-                    if(moves != null && !moves.isEmpty()){
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        return isInCheckmate(teamColor);
     }
 
     /**
