@@ -149,7 +149,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //see if there are moves, if not then checkmate
+        //see if there are moves, if not then checkmate, which should be enough because of how we defined check
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition position = new ChessPosition(i, j);
