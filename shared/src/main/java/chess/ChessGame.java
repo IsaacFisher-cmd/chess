@@ -57,7 +57,7 @@ public class ChessGame {
         if (thisPiece == null) {
             return null;
         }
-        //find out which moves dont place its team in check
+        //find out which moves don't place its team in check
         Collection<ChessMove> maybeMoves = gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
         for (ChessMove move : maybeMoves){
@@ -144,7 +144,19 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor) && isInStalemate(teamColor);
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = gameBoard.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor){
+                    Collection<ChessMove> moves = validMoves(position);
+                    if(moves != null && !moves.isEmpty()){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -155,7 +167,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return false;
+        //basically we are going to see if we have any moves, if we do false and otherwise true
+        if(isInCheck(teamColor)){
+            return false;
+        }
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = gameBoard.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor){
+                    Collection<ChessMove> moves = validMoves(position);
+                    if(moves != null && !moves.isEmpty()){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
