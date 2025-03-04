@@ -29,6 +29,34 @@ public class GameService {
         return gameDAO.listGames();
     }
 
+    public GameData getGameData(String authToken, int gameID) throws UnauthorizedException, BadRequestException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            return gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    public void updateGame(String authToken, GameData gameData) throws UnauthorizedException, BadRequestException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            gameDAO.updateGame(gameData);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
     public int createGame(String authToken, String gameName) throws UnauthorizedException, BadRequestException {
         try {
             authDAO.getAuth(authToken);
@@ -78,8 +106,7 @@ public class GameService {
         } else if (Objects.equals(color, "BLACK")) {
             if (blackUser != null && !blackUser.equals(authData.username())) return false; // Spot taken by someone else
             else blackUser = authData.username();
-        } else if (color != null) throw new BadRequestException("%s is not a valid team color".formatted(color));
-
+        } else { throw new BadRequestException("%s is not a valid team color".formatted(color));}
         try {
             gameDAO.updateGame(new GameData(gameID, whiteUser, blackUser, gameData.gameName(), gameData.game()));
         } catch (DataAccessException e) {
