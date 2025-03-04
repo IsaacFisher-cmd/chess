@@ -5,7 +5,7 @@ import model.GameData;
 import java.util.HashSet;
 
 public class MemoryGameDAO implements GameDAO {
-
+    // Building out the GameDAO methods
     HashSet<GameData> db;
 
     public MemoryGameDAO() {

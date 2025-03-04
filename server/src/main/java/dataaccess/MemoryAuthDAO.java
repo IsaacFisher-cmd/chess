@@ -5,7 +5,7 @@ import model.AuthData;
 import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
-
+    // Building out the AuthDAO methods
     HashSet<AuthData> db;
 
     public MemoryAuthDAO() {

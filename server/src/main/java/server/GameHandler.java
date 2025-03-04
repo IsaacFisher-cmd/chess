@@ -24,7 +24,7 @@ public class GameHandler {
         resp.status(200);
         JsonObject responseJson = new JsonObject();
         responseJson.add("games", new Gson().toJsonTree(games));
-
+        // Needed to toString to get around an error
         return responseJson.toString();
     }
 
