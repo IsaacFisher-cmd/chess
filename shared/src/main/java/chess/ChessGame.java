@@ -130,12 +130,12 @@ public class ChessGame {
         // see if anyone can take him
         for(int i = 1; i < 9; i++){
             for(int j = 1; j < 9; j++){
-                if(gameBoard.getPiece(new ChessPosition(i, j)) != null) {
-                    Collection<ChessMove> moves = gameBoard.getPiece(new ChessPosition(i, j)).pieceMoves(gameBoard, new ChessPosition(i, j));
-                    for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPos)) {
-                            return true;
-                        }
+                if(gameBoard.getPiece(new ChessPosition(i, j)) == null) {continue;}
+
+                Collection<ChessMove> moves = gameBoard.getPiece(new ChessPosition(i, j)).pieceMoves(gameBoard, new ChessPosition(i, j));
+                for (ChessMove move : moves) {
+                    if (move.getEndPosition().equals(kingPos)) {
+                        return true;
                     }
                 }
             }

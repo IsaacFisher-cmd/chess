@@ -82,7 +82,6 @@ public class ChessPiece {
                     i++;
                 }
             }
-
             void singleMove(int[] direction){
                 ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
                 if (onBoard(testPosition)) {
@@ -94,70 +93,52 @@ public class ChessPiece {
                 }
             }
         }
-
         DupeFix dupeFix = new DupeFix();
-
         switch (type) {
             case KING:
                 int [][] kingMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                for (int[] direction : kingMoveType) {
-                    dupeFix.singleMove(direction);
-                }
+                for (int[] direction : kingMoveType) {dupeFix.singleMove(direction);}
                 break;
             case QUEEN:
                 int [][] queenMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-                for (int[] direction : queenMoveType) {
-                    dupeFix.multiMove(direction);
-                }
+                for (int[] direction : queenMoveType) {dupeFix.multiMove(direction);}
                 break;
             case BISHOP:
                 int [][] bishopMoveType = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
-                for (int[] direction : bishopMoveType) {
-                    dupeFix.multiMove(direction);
-                }
+                for (int[] direction : bishopMoveType) {dupeFix.multiMove(direction);}
                 break;
             case KNIGHT:
                 int [][] knightMoveType = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
-                for (int[] direction : knightMoveType) {
-                    dupeFix.singleMove(direction);
-                }
+                for (int[] direction : knightMoveType) {dupeFix.singleMove(direction);}
                 break;
             case ROOK:
                 int [][] rookMoveType = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-                for (int[] direction : rookMoveType) {
-                    dupeFix.multiMove(direction);
-                }
+                for (int[] direction : rookMoveType) {dupeFix.multiMove(direction);}
                 break;
             case PAWN:
                 ChessPiece.PieceType[] promotions = new ChessPiece.PieceType[]{null};
-
                 int direction = -1;
                 if (teamColor == ChessGame.TeamColor.WHITE){
                     direction = 1;
                 }
-
                 if((direction == 1 && row == 7) || (direction == -1 && row == 2)){
                     promotions = new ChessPiece.PieceType[]{
                             ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN
                     };
                 }
-
                 for (ChessPiece.PieceType promotion : promotions) {
                     ChessPosition forwardMove = new ChessPosition(row + direction, col);
                     if (onBoard(forwardMove) && board.getPiece(forwardMove) == null) {
                         moves.add(new ChessMove(myPosition, forwardMove, promotion));
                     }
-
                     ChessPosition leftCap = new ChessPosition(row + direction, col - 1);
                     if (onBoard(leftCap) && board.getPiece(leftCap) != null && board.getPiece(leftCap).getTeamColor() != teamColor) {
                         moves.add(new ChessMove(myPosition, leftCap, promotion));
                     }
-
                     ChessPosition rightCap = new ChessPosition(row + direction, col + 1);
                     if (onBoard(rightCap) && board.getPiece(rightCap) != null && board.getPiece(rightCap).getTeamColor() != teamColor) {
                         moves.add(new ChessMove(myPosition, rightCap, promotion));
                     }
-
                     ChessPosition doubleMove = new ChessPosition(row + direction*2, col);
                     if (onBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7))
                             && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
