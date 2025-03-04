@@ -65,7 +65,7 @@ public class GameService {
         }
 
         int gameID;
-        do { // Get random gameIDs until the gameID is not already in use
+        do {
             gameID = ThreadLocalRandom.current().nextInt(1, 10000);
         } while (gameDAO.gameExists(gameID));
 
