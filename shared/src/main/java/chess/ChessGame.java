@@ -120,7 +120,8 @@ public class ChessGame {
         for(int i = 1; i < 9 && kingPos == null; i++){
             for(int j = 1; j < 9 && kingPos == null; j++){
                 if(gameBoard.getPiece(new ChessPosition(i, j)) != null) {
-                    if (gameBoard.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor && gameBoard.getPiece(new ChessPosition(i, j)).getPieceType() == ChessPiece.PieceType.KING) {
+                    if (gameBoard.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor
+                            && gameBoard.getPiece(new ChessPosition(i, j)).getPieceType() == ChessPiece.PieceType.KING) {
                         kingPos = new ChessPosition(i, j);
                     }
                 }

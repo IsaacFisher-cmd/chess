@@ -56,104 +56,76 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
+        class DupeFix {
+            void multiMove(int[] direction) {
+                boolean blocked = false;
+                int i = 1;
+                while (!blocked) {
+                    ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
+                    if (!onBoard(testPosition)) {
+                        blocked = true;
+                    } else if (board.getPiece(testPosition) == null) {
+                        moves.add(new ChessMove(myPosition, testPosition, null));
+                    } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                        moves.add(new ChessMove(myPosition, testPosition, null));
+                        blocked = true;
+                    } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
+                        blocked = true;
+                    } else {
+                        blocked = true;
+                    }
+                    i++;
+                }
+            }
+
+            void singleMove(int[] direction){
+                ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
+                if (onBoard(testPosition)) {
+                    if (board.getPiece(testPosition) == null) {
+                        moves.add(new ChessMove(myPosition, testPosition, null));
+                    } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
+                        moves.add(new ChessMove(myPosition, testPosition, null));
+                    }
+                }
+            }
+        }
+
+        DupeFix dupeFix = new DupeFix();
+
         switch (type) {
             case KING:
                 int [][] kingMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
                 for (int[] direction : kingMoveType) {
-                    ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
-                    if (onBoard(testPosition)) {
-                        if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        }
-                    }
+                    dupeFix.singleMove(direction);
                 }
                 break;
             case QUEEN:
                 int [][] queenMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
                 for (int[] direction : queenMoveType) {
-                    boolean blocked = false;
-                    int i = 1;
-                    while (!blocked) {
-                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!onBoard(testPosition)) {
-                            blocked = true;
-                        } else if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                            blocked = true;
-                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
-                            blocked = true;
-                        } else {
-                            blocked = true;
-                        }
-                        i++;
-                    }
+                    dupeFix.multiMove(direction);
                 }
                 break;
             case BISHOP:
                 int [][] bishopMoveType = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
                 for (int[] direction : bishopMoveType) {
-                    boolean blocked = false;
-                    int i = 1;
-                    while (!blocked) {
-                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!onBoard(testPosition)) {
-                            blocked = true;
-                        } else if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                            blocked = true;
-                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
-                            blocked = true;
-                        } else {
-                            blocked = true;
-                        }
-                        i++;
-                    }
+                    dupeFix.multiMove(direction);
                 }
                 break;
             case KNIGHT:
                 int [][] knightMoveType = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
                 for (int[] direction : knightMoveType) {
-                    ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
-                    if (onBoard(testPosition)) {
-                        if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        }
-                    }
+                    dupeFix.singleMove(direction);
                 }
                 break;
             case ROOK:
                 int [][] rookMoveType = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
                 for (int[] direction : rookMoveType) {
-                    boolean blocked = false;
-                    int i = 1;
-                    while (!blocked) {
-                        ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!onBoard(testPosition)) {
-                            blocked = true;
-                        } else if (board.getPiece(testPosition) == null) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                        } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
-                            moves.add(new ChessMove(myPosition, testPosition, null));
-                            blocked = true;
-                        } else if (board.getPiece(testPosition).getTeamColor() == teamColor) {
-                            blocked = true;
-                        } else {
-                            blocked = true;
-                        }
-                        i++;
-                    }
+                    dupeFix.multiMove(direction);
                 }
                 break;
             case PAWN:
@@ -165,7 +137,9 @@ public class ChessPiece {
                 }
 
                 if((direction == 1 && row == 7) || (direction == -1 && row == 2)){
-                    promotions = new ChessPiece.PieceType[]{ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN};
+                    promotions = new ChessPiece.PieceType[]{
+                            ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN
+                    };
                 }
 
                 for (ChessPiece.PieceType promotion : promotions) {
@@ -185,7 +159,8 @@ public class ChessPiece {
                     }
 
                     ChessPosition doubleMove = new ChessPosition(row + direction*2, col);
-                    if (onBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7)) && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
+                    if (onBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7))
+                            && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
                         moves.add(new ChessMove(myPosition, doubleMove, promotion));
                     }
                 }
