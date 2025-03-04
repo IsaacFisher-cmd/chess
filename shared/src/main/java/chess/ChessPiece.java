@@ -46,7 +46,7 @@ public class ChessPiece {
         return type;
     }
 
-    static boolean OnBoard(ChessPosition position) {
+    static boolean onBoard(ChessPosition position) {
         return (position.getRow() >= 1 && position.getColumn() >= 1 && position.getRow() <= 8 && position.getColumn() <= 8);
     }
     /**
@@ -65,7 +65,7 @@ public class ChessPiece {
                 int [][] kingMoveType = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
                 for (int[] direction : kingMoveType) {
                     ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
-                    if (OnBoard(testPosition)) {
+                    if (onBoard(testPosition)) {
                         if (board.getPiece(testPosition) == null) {
                             moves.add(new ChessMove(myPosition, testPosition, null));
                         } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
@@ -81,7 +81,7 @@ public class ChessPiece {
                     int i = 1;
                     while (!blocked) {
                         ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!OnBoard(testPosition)) {
+                        if (!onBoard(testPosition)) {
                             blocked = true;
                         } else if (board.getPiece(testPosition) == null) {
                             moves.add(new ChessMove(myPosition, testPosition, null));
@@ -104,7 +104,7 @@ public class ChessPiece {
                     int i = 1;
                     while (!blocked) {
                         ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!OnBoard(testPosition)) {
+                        if (!onBoard(testPosition)) {
                             blocked = true;
                         } else if (board.getPiece(testPosition) == null) {
                             moves.add(new ChessMove(myPosition, testPosition, null));
@@ -124,7 +124,7 @@ public class ChessPiece {
                 int [][] knightMoveType = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
                 for (int[] direction : knightMoveType) {
                     ChessPosition testPosition = new ChessPosition(row + direction[0], col + direction[1]);
-                    if (OnBoard(testPosition)) {
+                    if (onBoard(testPosition)) {
                         if (board.getPiece(testPosition) == null) {
                             moves.add(new ChessMove(myPosition, testPosition, null));
                         } else if (board.getPiece(testPosition).getTeamColor() != teamColor) {
@@ -140,7 +140,7 @@ public class ChessPiece {
                     int i = 1;
                     while (!blocked) {
                         ChessPosition testPosition = new ChessPosition(row + direction[0] * i, col + direction[1] * i);
-                        if (!OnBoard(testPosition)) {
+                        if (!onBoard(testPosition)) {
                             blocked = true;
                         } else if (board.getPiece(testPosition) == null) {
                             moves.add(new ChessMove(myPosition, testPosition, null));
@@ -170,22 +170,22 @@ public class ChessPiece {
 
                 for (ChessPiece.PieceType promotion : promotions) {
                     ChessPosition forwardMove = new ChessPosition(row + direction, col);
-                    if (OnBoard(forwardMove) && board.getPiece(forwardMove) == null) {
+                    if (onBoard(forwardMove) && board.getPiece(forwardMove) == null) {
                         moves.add(new ChessMove(myPosition, forwardMove, promotion));
                     }
 
                     ChessPosition leftCap = new ChessPosition(row + direction, col - 1);
-                    if (OnBoard(leftCap) && board.getPiece(leftCap) != null && board.getPiece(leftCap).getTeamColor() != teamColor) {
+                    if (onBoard(leftCap) && board.getPiece(leftCap) != null && board.getPiece(leftCap).getTeamColor() != teamColor) {
                         moves.add(new ChessMove(myPosition, leftCap, promotion));
                     }
 
                     ChessPosition rightCap = new ChessPosition(row + direction, col + 1);
-                    if (OnBoard(rightCap) && board.getPiece(rightCap) != null && board.getPiece(rightCap).getTeamColor() != teamColor) {
+                    if (onBoard(rightCap) && board.getPiece(rightCap) != null && board.getPiece(rightCap).getTeamColor() != teamColor) {
                         moves.add(new ChessMove(myPosition, rightCap, promotion));
                     }
 
                     ChessPosition doubleMove = new ChessPosition(row + direction*2, col);
-                    if (OnBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7)) && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
+                    if (onBoard(doubleMove) && ((direction == 1 && row == 2) || (direction == -1 && row == 7)) && board.getPiece(forwardMove) == null && board.getPiece(doubleMove) == null) {
                         moves.add(new ChessMove(myPosition, doubleMove, promotion));
                     }
                 }
