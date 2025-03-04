@@ -2,11 +2,11 @@ package dataaccess;
 
 import model.GameData;
 
-import java.util.Collection;
+import java.util.HashSet;
 
 public interface GameDAO {
 
-    Collection<GameData> listGames();
+    HashSet<GameData> listGames();
     void createGame(GameData game) throws DataAccessException;
     GameData getGame(int gameID) throws DataAccessException;
     boolean gameExists(int gameID);

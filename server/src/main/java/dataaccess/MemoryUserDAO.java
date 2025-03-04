@@ -2,15 +2,14 @@ package dataaccess;
 
 import model.UserData;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
 
-    private Collection<UserData> db;
+    private HashSet<UserData> db;
 
     public MemoryUserDAO() {
-        db = new ArrayList<>();
+        db = HashSet.newHashSet(16);
     }
 
     @Override
@@ -59,6 +58,6 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void clear() {
-        db = new ArrayList<>();
+        db = HashSet.newHashSet(16);
     }
 }

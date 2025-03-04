@@ -6,7 +6,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -20,7 +20,7 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
-    public Collection<GameData> listGames(String authToken) throws UnauthorizedException {
+    public HashSet<GameData> listGames(String authToken) throws UnauthorizedException {
         try {
             authDAO.getAuth(authToken);
         } catch (DataAccessException e) {

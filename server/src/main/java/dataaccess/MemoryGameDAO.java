@@ -2,19 +2,18 @@ package dataaccess;
 
 import model.GameData;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 
 public class MemoryGameDAO implements GameDAO {
 
-    Collection<GameData> db;
+    HashSet<GameData> db;
 
     public MemoryGameDAO() {
-        db = new ArrayList<>();
+        db = HashSet.newHashSet(16);
     }
 
     @Override
-    public Collection<GameData> listGames() {
+    public HashSet<GameData> listGames() {
         return db;
     }
 
@@ -55,6 +54,6 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void clear() {
-        db = new ArrayList<>();
+        db = HashSet.newHashSet(16);
     }
 }
