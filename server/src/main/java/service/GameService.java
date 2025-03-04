@@ -29,20 +29,6 @@ public class GameService {
         return gameDAO.listGames();
     }
 
-    public void updateGame(String authToken, GameData gameData) throws UnauthorizedException, BadRequestException {
-        try {
-            authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
-            throw new UnauthorizedException();
-        }
-
-        try {
-            gameDAO.updateGame(gameData);
-        } catch (DataAccessException e) {
-            throw new BadRequestException(e.getMessage());
-        }
-    }
-
     public int createGame(String authToken, String gameName) throws UnauthorizedException, BadRequestException {
         try {
             authDAO.getAuth(authToken);
