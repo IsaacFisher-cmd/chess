@@ -33,7 +33,7 @@ public class SQLAuthDAO implements AuthDAO {
                 statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            return;
+            //
         }
     }
 
@@ -45,7 +45,7 @@ public class SQLAuthDAO implements AuthDAO {
                 statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            return;
+            //
         }
     }
 
@@ -75,7 +75,7 @@ public class SQLAuthDAO implements AuthDAO {
                 throw new RuntimeException(e);
             }
         } catch (SQLException | DataAccessException e) {
-            return;
+            //
         }
     }
 }

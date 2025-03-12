@@ -72,7 +72,7 @@ public class SQLUserDAO implements UserDAO {
                 throw new RuntimeException(e);
             }
         } catch (SQLException | DataAccessException e) {
-            return;
+            //
         }
     }
 }
