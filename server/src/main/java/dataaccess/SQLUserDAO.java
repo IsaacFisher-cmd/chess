@@ -8,6 +8,9 @@ import org.mindrot.jbcrypt.BCrypt;
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() {
+        try { DatabaseManager.createDatabase(); } catch (DataAccessException ex) {
+            throw new RuntimeException(ex);
+        }
         try (var conn = DatabaseManager.getConnection()) {
             conn.setCatalog("chess");
             var createTestTable = """            
@@ -59,14 +62,14 @@ public class SQLUserDAO implements UserDAO {
     }
 
     private boolean passwordMatches(String providedPassword, String storedHash) {
-        return BCrypt.checkpw(providedPassword, storedHash); // Compare hashes
+        return BCrypt.checkpw(providedPassword, storedHash);
     }
 
     @Override
     public boolean authenticateUser(String username, String password) throws DataAccessException {
         try {
             UserData user = getUser(username);
-            return passwordMatches(password, user.password()); // Compare hashed passwords
+            return passwordMatches(password, user.password());
         } catch (DataAccessException e) {
             return false;
         }
