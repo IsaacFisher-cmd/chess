@@ -74,22 +74,24 @@ class SQLAuthDAOTest {
         }
     }
 
+    private void assertAuthNotExists(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
+                statement.setString(1, username);
+                try (var results = statement.executeQuery()) {
+                    assertFalse(results.next(), "Auth record should not exist in the database.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking auth record existence");
+        }
+    }
+
     @Test
     void deleteAuthPositive() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
-
         dao.deleteAuth(defaultAuth.authToken());
-
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?"))
-            {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery())
-                {
-                    assertFalse(results.next());
-                }
-            }
-        }
+        assertAuthNotExists(defaultAuth.username());
     }
 
     @Test
@@ -115,14 +117,6 @@ class SQLAuthDAOTest {
     void clear() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
         dao.clear();
-
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next());
-                }
-            }
-        }
+        assertAuthNotExists(defaultAuth.username());
     }
 }
