@@ -81,10 +81,12 @@ class SQLAuthDAOTest {
         dao.deleteAuth(defaultAuth.authToken());
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
+            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?"))
+            {
                 statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
+                try (var results = statement.executeQuery())
+                {
+                    assertFalse(results.next());
                 }
             }
         }
@@ -118,7 +120,7 @@ class SQLAuthDAOTest {
             try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
                 statement.setString(1, defaultAuth.username());
                 try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
+                    assertFalse(results.next());
                 }
             }
         }

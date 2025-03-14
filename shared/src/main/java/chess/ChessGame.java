@@ -202,8 +202,8 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;  // Same reference
-        if (obj == null || getClass() != obj.getClass()) return false;  // Different class
+        if (this == obj) {return true;}  // Same reference
+        if (obj == null || getClass() != obj.getClass()) {return false;}  // Different class
 
         ChessGame chessGame = (ChessGame) obj;
 
