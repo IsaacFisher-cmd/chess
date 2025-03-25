@@ -1,16 +1,20 @@
 package ui;
 
 import client.ServerFacade;
+import model.GameData;
 
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.out;
 
 public class PostloginREPL {
 
     ServerFacade server;
+    List<GameData> games;
+
     public PostloginREPL(ServerFacade server) {
         this.server = server;
+        games = new ArrayList<>();
     }
 
     public void run() {
@@ -27,7 +31,8 @@ public class PostloginREPL {
                     loggedIn = false;
                     break;
                 case "list":
-                    out.println(server.listGames());
+                    refreshGames();
+                    printGames();
                     break;
                 case "create":
                     if (input.length != 2) {
@@ -44,7 +49,7 @@ public class PostloginREPL {
                         printJoin();
                         break;
                     }
-                    if (server.joinGame(Integer.parseInt(input[1]), input[2])) {
+                    if (server.joinGame(games.get(Integer.parseInt(input[1])).gameID(), input[2].toUpperCase())) {
                         out.println("You have joined the game");
                         break;
                     } else {
@@ -67,6 +72,21 @@ public class PostloginREPL {
         out.print("\n[LOGGED IN] >>> ");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine().split(" ");
+    }
+
+    private void refreshGames() {
+        games = new ArrayList<>();
+        HashSet<GameData> gameList = server.listGames();
+        games.addAll(gameList);
+    }
+
+    private void printGames() {
+        for (int i = 0; i < games.size(); i++) {
+            GameData game = games.get(i);
+            String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "open";
+            String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
+            out.printf("%d -- Game Name: %s  |  White User: %s  |  Black User: %s %n", i, game.gameName(), whiteUser, blackUser);
+        }
     }
 
     private void printHelpMenu() {
