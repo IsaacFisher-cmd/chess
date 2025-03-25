@@ -7,8 +7,8 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof GameData other)) return false;
+        if (this == o){ return true;}
+        if (!(o instanceof GameData other)){ return false;}
         return this.gameID == other.gameID;
     }
 

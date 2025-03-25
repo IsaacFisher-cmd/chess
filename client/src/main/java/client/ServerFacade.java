@@ -88,6 +88,16 @@ public class ServerFacade {
         return !resp.containsKey("Error");
     }
 
+    private void writeRequestBody(HttpURLConnection http, String body) throws IOException {
+        if (body != null) {
+            http.setDoOutput(true);
+            http.addRequestProperty("Content-Type", "application/json");
+            try (var outputStream = http.getOutputStream()) {
+                outputStream.write(body.getBytes());
+            }
+        }
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
@@ -105,13 +115,7 @@ public class ServerFacade {
                 http.addRequestProperty("authorization", authToken);
             }
 
-            if (body != null) {
-                http.setDoOutput(true);
-                http.addRequestProperty("Content-Type", "application/json");
-                try (var outputStream = http.getOutputStream()) {
-                    outputStream.write(body.getBytes());
-                }
-            }
+            writeRequestBody(http, body);
 
             http.connect();
 
@@ -147,13 +151,7 @@ public class ServerFacade {
                 http.addRequestProperty("authorization", authToken);
             }
 
-            if (!Objects.equals(body, null)) {
-                http.setDoOutput(true);
-                http.addRequestProperty("Content-Type", "application/json");
-                try (var outputStream = http.getOutputStream()) {
-                    outputStream.write(body.getBytes());
-                }
-            }
+            writeRequestBody(http, body);
 
             http.connect();
 
