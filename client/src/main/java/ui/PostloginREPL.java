@@ -55,32 +55,42 @@ public class PostloginREPL {
                         printJoin();
                         break;
                     }
-                    GameData joinGame = games.get(Integer.parseInt(input[1]));
+                    refreshGames();
+                    int joinId = Integer.parseInt(input[1]);
+                    GameData joinGame = findGameById(joinId);
+                    if (joinGame == null) {
+                        out.println("Game with ID " + joinId + " not found");
+                        break;
+                    }
                     if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
                         out.println("You have joined the game");
                         new BoardPrinter(joinGame.game().getBoard()).printBoard();
-                        break;
                     } else {
                         out.println("Game does not exist or color taken");
                         printJoin();
-                        break;
                     }
+                    break;
                 case "observe":
                     if (input.length != 2) {
                         out.println("Please provide a game ID");
                         printObserve();
                         break;
                     }
-                    GameData observeGame = games.get(Integer.parseInt(input[1]));
+                    refreshGames();
+                    int observeId = Integer.parseInt(input[1]);
+                    GameData observeGame = findGameById(observeId);
+                    if (observeGame == null) {
+                        out.println("Game with ID " + observeId + " not found");
+                        break;
+                    }
                     if (server.joinGame(observeGame.gameID(), null)) {
                         out.println("You have joined the game as an observer");
                         new BoardPrinter(observeGame.game().getBoard()).printBoard();
-                        break;
                     } else {
                         out.println("Game does not exist");
                         printObserve();
-                        break;
                     }
+                    break;
                 default:
                     out.println("Command not recognized, please try again");
                     printHelpMenu();
@@ -135,5 +145,12 @@ public class PostloginREPL {
         out.println("observe <ID> - observe a game");
     }
 
-
+    private GameData findGameById(int gameId) {
+        for (GameData game : games) {
+            if (game.gameID() == gameId) {
+                return game;
+            }
+        }
+        return null;
+    }
 }
