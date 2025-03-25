@@ -105,10 +105,11 @@ public class ServerFacadeTests {
 
     @Test
     public void joinGameNegative() {
-        facade.register("username", "password", "email@example.com");
+        facade.register("player1", "password", "email1@example.com");
         int id = facade.createGame("gameName");
         facade.joinGame(id, "WHITE");
-        assertFalse(facade.joinGame(id, "WHITE"));  // Second join as WHITE should fail
+        facade.register("player2", "password", "email2@example.com");
+        assertFalse(facade.joinGame(id, "WHITE"));
     }
 
 }
