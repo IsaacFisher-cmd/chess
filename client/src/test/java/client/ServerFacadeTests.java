@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -104,10 +105,10 @@ public class ServerFacadeTests {
 
     @Test
     public void joinGameNegative() {
-        facade.register("username", "password", "email");
+        facade.register("username", "password", "email@example.com");
         int id = facade.createGame("gameName");
         facade.joinGame(id, "WHITE");
-        assertFalse(facade.joinGame(id, "WHITE"));
+        assertFalse(facade.joinGame(id, "WHITE"));  // Second join as WHITE should fail
     }
 
 }
