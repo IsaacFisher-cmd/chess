@@ -63,12 +63,15 @@ public class Server {
     }
 
     // Methods needed for endpoints
-    private Object clear(Request req, Response resp) {
+    public void clearDB() {
         userService.clear();
         gameService.clear();
+    }
 
-            resp.status(200);
-            return "{}";
+    private Object clear(Request req, Response resp) {
+        clearDB();
+        resp.status(200);
+        return "{}";
     }
 
     private void badRequestExceptionHandler(BadRequestException ex, Request req, Response resp) {
