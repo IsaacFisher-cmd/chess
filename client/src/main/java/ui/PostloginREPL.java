@@ -76,20 +76,7 @@ public class PostloginREPL {
                         printObserve();
                         break;
                     }
-                    refreshGames();
-                    int observeId = Integer.parseInt(input[1]);
-                    GameData observeGame = findGameById(observeId);
-                    if (observeGame == null) {
-                        out.println("Game with ID " + observeId + " not found");
-                        break;
-                    }
-                    if (server.joinGame(observeGame.gameID(), null)) {
-                        out.println("You have joined the game as an observer");
-                        new BoardPrinter(observeGame.game().getBoard()).printBoard();
-                    } else {
-                        out.println("Game does not exist");
-                        printObserve();
-                    }
+                    out.println("Observation feature is not available yet.");
                     break;
                 default:
                     out.println("Command not recognized, please try again");
