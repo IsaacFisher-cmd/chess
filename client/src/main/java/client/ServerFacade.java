@@ -96,6 +96,8 @@ public class ServerFacade {
         Map respMap;
         try {
             URI uri = new URI(baseURL + endpoint);
+            System.out.println("Requesting: " + uri);  // 👈 See the full URL you're hitting
+
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
             http.setRequestMethod(method);
 
@@ -103,7 +105,7 @@ public class ServerFacade {
                 http.addRequestProperty("authorization", authToken);
             }
 
-            if (!Objects.equals(body, null)) {
+            if (body != null) {
                 http.setDoOutput(true);
                 http.addRequestProperty("Content-Type", "application/json");
                 try (var outputStream = http.getOutputStream()) {
@@ -113,14 +115,9 @@ public class ServerFacade {
 
             http.connect();
 
-            try {
-                if (http.getResponseCode() == 401) {
-                    return Map.of("Error", 401);
-                }
-            } catch (IOException e) {
+            if (http.getResponseCode() == 401) {
                 return Map.of("Error", 401);
             }
-
 
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader inputStreamReader = new InputStreamReader(respBody);
@@ -128,6 +125,7 @@ public class ServerFacade {
             }
 
         } catch (URISyntaxException | IOException e) {
+            System.out.println("❌ Connection error: " + e.getMessage());  // 👈 Add this
             return Map.of("Error", e.getMessage());
         }
 
