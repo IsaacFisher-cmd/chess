@@ -106,7 +106,6 @@ public class ServerFacade {
         Map respMap;
         try {
             URI uri = new URI(baseURL + endpoint);
-            System.out.println("Requesting: " + uri);  // 👈 See the full URL you're hitting
 
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
             http.setRequestMethod(method);
@@ -128,8 +127,7 @@ public class ServerFacade {
                 respMap = new Gson().fromJson(inputStreamReader, Map.class);
             }
 
-        } catch (URISyntaxException | IOException e) {
-            System.out.println("❌ Connection error: " + e.getMessage());  // 👈 Add this
+        } catch (URISyntaxException | IOException e) {// 👈 Add this
             return Map.of("Error", e.getMessage());
         }
 
