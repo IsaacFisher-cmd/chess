@@ -1,10 +1,9 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
-import ui.EscapeSequences.*;
+
 
 import java.util.*;
 
@@ -23,8 +22,9 @@ public class PostloginREPL {
 
     public void run() {
         boolean loggedIn = true;
+        boolean inGame = false;
         out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
-        while (loggedIn) {
+        while (loggedIn && !inGame) {
             String[] input = getUserInput();
             switch (input[0]) {
                 case "quit":
@@ -50,14 +50,28 @@ public class PostloginREPL {
                     out.printf("Created game: %s%n", input[1]);
                     break;
                 case "join":
-                    if (input.length != 3) {
+                    if (input.length != 3 || !input[1].matches("\\d") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
                         out.println("Please provide a game ID and color choice");
                         printJoin();
                         break;
                     }
                     refreshGames();
                     int joinId = Integer.parseInt(input[1]);
-                    GameData joinGame = findGameById(joinId);
+                    int gameNum = Integer.parseInt(input[1]);
+                    if (games.isEmpty() || games.size() <= gameNum) {
+                        refreshGames();
+                        if (games.isEmpty()) {
+                            out.println("Error: please first create a game");
+                            break;
+                        }
+                        if (games.size() <= gameNum) {
+                            out.println("Error: that Game ID does not exist");
+                            printGames();
+                            break;
+                        }
+                    }
+                    GameData joinGame = games.get(gameNum);
+                    ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
                     if (joinGame == null) {
                         out.println("Game with ID " + joinId + " not found");
                         break;
