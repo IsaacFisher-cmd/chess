@@ -1,28 +1,32 @@
 package client;
 
-import com.google.gson.Gson;
 import model.GameData;
-import model.GamesList;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 public class ServerFacade {
 
     HttpCommunicator http;
-    String baseURL;
+    WebsocketCommunicator ws;
+    String serverDomain;
+    String authToken;
 
-    public ServerFacade() {
-        this("http://localhost:8080");
+    public ServerFacade() throws Exception {
+        this("localhost:8080");
     }
 
-    public ServerFacade(String url) {
-        baseURL = url;
+    public ServerFacade(String serverDomain) throws Exception {
+        this.serverDomain = serverDomain;
+        http = new HttpCommunicator(this, serverDomain);
+        ws = new WebsocketCommunicator(serverDomain);
+    }
+
+    protected String getAuthToken() {
+        return authToken;
+    }
+
+    protected void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     public boolean register(String username, String password, String email) {
@@ -47,5 +51,9 @@ public class ServerFacade {
 
     public boolean joinGame(int gameId, String playerColor) {
         return http.joinGame(gameId, playerColor);
+    }
+
+    public void sendWSMessage(String message) {
+        ws.sendMessage(message);
     }
 }

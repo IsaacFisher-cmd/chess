@@ -17,10 +17,11 @@ import java.util.Objects;
 public class HttpCommunicator {
 
     String baseURL;
-    String authToken;
+    ServerFacade facade;
 
-    public HttpCommunicator(String url) {
-        baseURL = url;
+    public HttpCommunicator(ServerFacade facade, String serverDomain) {
+        baseURL = "http://" + serverDomain;
+        this.facade = facade;
     }
 
     public boolean register(String username, String password, String email) {
@@ -30,7 +31,7 @@ public class HttpCommunicator {
         if (resp.containsKey("Error")) {
             return false;
         }
-        authToken = (String) resp.get("authToken");
+        facade.setAuthToken((String) resp.get("authToken"));
         return true;
     }
 
@@ -47,7 +48,7 @@ public class HttpCommunicator {
         if (resp.containsKey("Error")) {
             return false;
         }
-        authToken = (String) resp.get("authToken");
+        facade.setAuthToken((String) resp.get("authToken"));
         return true;
     }
 
@@ -56,7 +57,7 @@ public class HttpCommunicator {
         if (resp.containsKey("Error")) {
             return false;
         }
-        authToken = null;
+        facade.setAuthToken(null);
         return true;
     }
 
@@ -104,8 +105,8 @@ public class HttpCommunicator {
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
             http.setRequestMethod(method);
 
-            if (authToken != null) {
-                http.addRequestProperty("authorization", authToken);
+            if (facade.getAuthToken() != null) {
+                http.addRequestProperty("authorization", facade.getAuthToken());
             }
 
             if (!Objects.equals(body, null)) {
@@ -150,8 +151,8 @@ public class HttpCommunicator {
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
             http.setRequestMethod(method);
 
-            if (authToken != null) {
-                http.addRequestProperty("authorization", authToken);
+            if (facade.getAuthToken() != null) {
+                http.addRequestProperty("authorization", facade.getAuthToken());
             }
 
             if (!Objects.equals(body, null)) {
