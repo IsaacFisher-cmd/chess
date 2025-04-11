@@ -47,7 +47,7 @@ public class PostloginREPL {
                         break;
                     }
                     int gameID = server.createGame(input[1]);
-                    out.printf("Created game, ID: %d%n", gameID);
+                    out.printf("Created game: %s%n", input[1]);
                     break;
                 case "join":
                     if (input.length != 3) {
