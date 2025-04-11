@@ -78,20 +78,46 @@ public class PostloginREPL {
                     }
                     if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
                         out.println("You have joined the game");
-                        new BoardPrinter(joinGame.game().getBoard()).printBoard();
+                        server.sendWSMessage("Test Join");
+                        inGame = true;
+                        GameplayREPL gameplayREPL = new GameplayREPL(server, joinGame.game(), color);
+                        gameplayREPL.run();
                     } else {
                         out.println("Game does not exist or color taken");
                         printJoin();
                     }
                     break;
                 case "observe":
-                    if (input.length != 2) {
+                    if (input.length != 2 || !input[1].matches("\\d")) {
                         out.println("Please provide a game ID");
                         printObserve();
                         break;
                     }
-                    out.println("Observation feature is not available yet.");
-                    break;
+                    int gameObservedNum = Integer.parseInt(input[1]);
+                    if (games.isEmpty() || games.size() <= gameObservedNum) {
+                        refreshGames();
+                        if (games.isEmpty()) {
+                            out.println("Error: please first create a game");
+                            break;
+                        }
+                        if (games.size() <= gameObservedNum) {
+                            out.println("Error: that Game ID does not exist");
+                            printGames();
+                            break;
+                        }
+                    }
+                    GameData observeGame = games.get(gameObservedNum);
+                    if (server.joinGame(observeGame.gameID(), null)) {
+                        out.println("You have joined the game as an observer");
+                        inGame = true;
+                        GameplayREPL gameplayREPL = new GameplayREPL(server, observeGame.game(), null);
+                        gameplayREPL.run();
+                        break;
+                    } else {
+                        out.println("Game does not exist");
+                        printObserve();
+                        break;
+                    }
                 default:
                     out.println("Command not recognized, please try again");
                     printHelpMenu();
@@ -99,8 +125,10 @@ public class PostloginREPL {
             }
         }
 
-        PreloginREPL preloginREPL = new PreloginREPL(server);
-        preloginREPL.run();
+        if (!loggedIn) {
+            PreloginREPL preloginREPL = new PreloginREPL(server);
+            preloginREPL.run();
+        }
     }
 
     private String[] getUserInput() {
