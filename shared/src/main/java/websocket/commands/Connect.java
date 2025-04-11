@@ -1,4 +1,4 @@
 package websocket.commands;
 
-public class JoinPlayer {
+public class Connect {
 }
