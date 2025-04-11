@@ -37,8 +37,8 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/connect", WebsocketHandler.class);
 
-        // Each of our endpoints
         Spark.delete("/db", this::clear);
         Spark.post("/user", userHandler::register);
         Spark.post("/session", userHandler::login);
