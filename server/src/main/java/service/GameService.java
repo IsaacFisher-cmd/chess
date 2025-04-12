@@ -29,6 +29,34 @@ public class GameService {
         return gameDAO.listGames();
     }
 
+    public GameData getGameData(String authToken, int gameID) throws UnauthorizedException, BadRequestException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            return gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    public void updateGame(String authToken, GameData gameData) throws UnauthorizedException, BadRequestException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            gameDAO.updateGame(gameData);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
     public int createGame(String authToken, String gameName) throws UnauthorizedException, BadRequestException {
         try {
             authDAO.getAuth(authToken);
