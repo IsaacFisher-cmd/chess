@@ -13,15 +13,15 @@ public class BoardPrinter {
 
     ChessGame game;
 
-    BoardPrinter(ChessGame game) {
+    public BoardPrinter(ChessGame game) {
         this.game = game;
     }
 
-    void updateGame(ChessGame game) {
+    public void updateGame(ChessGame game) {
         this.game = game;
     }
 
-    void printBoard(ChessGame.TeamColor color, ChessPosition selectedPos) {
+    public void printBoard(ChessGame.TeamColor color, ChessPosition selectedPos) {
         StringBuilder output = new StringBuilder();
         output.append(SET_TEXT_BOLD);
 
@@ -52,6 +52,7 @@ public class BoardPrinter {
         }
         output.append(RESET_TEXT_BOLD_FAINT);
         out.println(output);
+        out.printf("Turn: %s\n", game.getTeamTurn() == ChessGame.TeamColor.WHITE ? "white" : "black");
     }
 
     private String startingRow(boolean reversed) {

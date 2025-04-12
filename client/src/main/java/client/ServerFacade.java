@@ -87,7 +87,7 @@ public class ServerFacade {
     }
 
     public void connect(int gameID, ChessGame.TeamColor color) {
-        sendCommand(new connect(authToken, gameID, color));
+        sendCommand(new Connect(authToken, gameID, color));
     }
 
     public void makeMove(int gameID, ChessMove move) {
