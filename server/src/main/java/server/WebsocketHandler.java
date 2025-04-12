@@ -42,7 +42,7 @@ public class WebsocketHandler {
 
         if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
             Connect command = new Gson().fromJson(message, Connect.class);
-            Server.gameSessions.replace(session, command.getGameID());
+            Server.gameSessions.put(session, command.getGameID());
             handleConnect(session, command);
         }
         else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {

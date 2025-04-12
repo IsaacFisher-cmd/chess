@@ -4,7 +4,6 @@ import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 
-
 import java.util.*;
 
 import static java.lang.System.out;

@@ -20,7 +20,7 @@ public class HttpCommunicator {
     ServerFacade facade;
 
     public HttpCommunicator(ServerFacade facade, String serverDomain) {
-        baseURL = "http://" + serverDomain;
+        baseURL = serverDomain.startsWith("http") ? serverDomain : "http://" + serverDomain;
         this.facade = facade;
     }
 
