@@ -20,6 +20,7 @@ import websocket.commands.*;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @WebSocket
@@ -62,11 +63,32 @@ public class WebsocketHandler {
 
         try {
             AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
+
+            ChessGame.TeamColor joiningColor = command.getPlayerColor();
+
+            boolean correctColor = false;
+            if (joiningColor == ChessGame.TeamColor.WHITE) {
+                correctColor = Objects.equals(game.whiteUsername(), auth.username());
+            }
+            else {
+                correctColor = Objects.equals(game.blackUsername(), auth.username());
+            }
+
+            if (!correctColor) {
+                Error error = new Error("Error: attempting to join with wrong color");
+                sendError(session, error);
+                return;
+            }
             Notification notif = new Notification("%s has joined the game as %s".formatted(auth.username(), command.getPlayerColor()));
             broadcastMessage(session, notif);
+            LoadGame load = new LoadGame(game.game());
+            sendMessage(session, load);
         }
         catch (UnauthorizedException e) {
             sendError(session, new Error("Error: Not authorized"));
+        } catch (BadRequestException e) {
+            sendError(session, new Error("Error: Not a valid game"));
         }
 
     }
@@ -80,10 +102,15 @@ public class WebsocketHandler {
                 sendError(session, new Error("Error: You are observing this game"));
                 return;
             }
-
+            if (game.game().getGameOver()) {
+                sendError(session, new Error("Error: can not make a move, game is over"));
+                return;
+            }
             if (game.game().getTeamTurn().equals(userColor)) {
                 game.game().makeMove(command.getMove());
                 Server.gameService.updateGame(auth.authToken(), game);
+                Notification notif = new Notification("A move has been made by %s".formatted(auth.username()));
+                broadcastMessage(session, notif);
                 LoadGame load = new LoadGame(game.game());
                 broadcastMessage(session, load, true);
             }
@@ -96,7 +123,8 @@ public class WebsocketHandler {
         } catch (BadRequestException e) {
             sendError(session, new Error("Error: invalid game"));
         } catch (InvalidMoveException e) {
-            sendError(session, new Error("Error: invalid move"));
+            System.out.println("****** error: " + e.getMessage() + "  " + command.getMove().toString());
+            sendError(session, new Error("Error: invalid move (you might need to specify a promotion piece)"));
         }
     }
 
@@ -125,6 +153,13 @@ public class WebsocketHandler {
                 sendError(session, new Error("Error: You are observing this game"));
                 return;
             }
+            if (game.game().getGameOver()) {
+                sendError(session, new Error("Error: The game is already over!"));
+                return;
+            }
+
+            game.game().setGameOver(true);
+            Server.gameService.updateGame(auth.authToken(), game);
 
             Notification notif = new Notification("%s has forfeited, %s wins!".formatted(auth.username(), opponentUsername));
             broadcastMessage(session, notif, true);
@@ -148,12 +183,17 @@ public class WebsocketHandler {
             boolean sameGame = Server.gameSessions.get(session).equals(Server.gameSessions.get(currSession));
             boolean isSelf = session == currSession;
             if ((toSelf || !isSelf) && inAGame && sameGame) {
-                session.getRemote().sendString(new Gson().toJson(message));
+                sendMessage(session, message);
             }
         }
     }
 
+    public void sendMessage(Session session, ServerMessage message) throws IOException {
+        session.getRemote().sendString(new Gson().toJson(message));
+    }
+
     private void sendError(Session session, Error error) throws IOException {
+        System.out.printf("Error: %s%n", new Gson().toJson(error));
         session.getRemote().sendString(new Gson().toJson(error));
     }
 
