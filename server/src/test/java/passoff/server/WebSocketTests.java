@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.websocket.*;
 import server.Server;
+import websocket.ServerConfig;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -35,7 +36,7 @@ public class WebSocketTests {
         server = new Server();
         var port = Integer.toString(server.run(0));
         System.out.println("Started test HTTP server on " + port);
-
+        ServerConfig.setPort(port);
         serverFacade = new TestServerFacade("localhost", port);
         serverFacade.clear();
         environment = new WebsocketTestingEnvironment("localhost", port, "/ws", TestFactory.getGsonBuilder());

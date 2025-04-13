@@ -6,10 +6,11 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import websocket.*;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-
 
     UserDAO userDAO;
     AuthDAO authDAO;
@@ -35,14 +36,18 @@ public class Server {
         userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
 
+        try { DatabaseManager.createDatabase(); } catch (DataAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public int run(int desiredPort) {
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        Spark.webSocket("/connect", WebsocketHandler.class);
+        Spark.webSocket("/ws", WebsocketHandler.class);
 
         Spark.delete("/db", this::clear);
         Spark.post("/user", userHandler::register);

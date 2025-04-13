@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import model.GameData;
 import websocket.messages.ServerMessage;
 import websocket.commands.*;
+import websocket.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +23,8 @@ public class ServerFacade {
     }
 
     public ServerFacade(String serverDomain) throws Exception {
-        this.serverDomain = serverDomain;
+        this.serverDomain = "localhost:" + ServerConfig.getPort();
+        System.out.print(serverDomain);
         http = new HttpCommunicator(this, serverDomain);
     }
 

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import ui.BoardPrinter;
 import ui.GameplayREPL;
+import websocket.ServerConfig;
 import websocket.messages.Error;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
@@ -24,8 +25,8 @@ public class WebsocketCommunicator extends Endpoint {
 
     public WebsocketCommunicator(String serverDomain) throws Exception {
         try {
-            URI uri = new URI("ws://" + serverDomain + "/connect");
-
+            URI uri = new URI("ws://localhost:" + ServerConfig.getPort() + "/ws");
+            System.out.println("Connecting to WebSocket URI: " + uri);
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
