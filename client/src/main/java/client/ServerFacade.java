@@ -23,7 +23,7 @@ public class ServerFacade {
     }
 
     public ServerFacade(String serverDomain) throws Exception {
-        this.serverDomain = "localhost:" + ServerConfig.getPort();
+        this.serverDomain = serverDomain;
         System.out.print(serverDomain);
         http = new HttpCommunicator(this, serverDomain);
     }
