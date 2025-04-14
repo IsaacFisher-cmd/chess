@@ -100,10 +100,6 @@ public class GameService {
         String whiteUser = gameData.whiteUsername();
         String blackUser = gameData.blackUsername();
 
-        if(color == null){
-            return true;
-        }
-
         if (Objects.equals(color, "WHITE")) {
             if (whiteUser != null && !whiteUser.equals(authData.username())){ return false; }// Spot taken by someone else
             else {whiteUser = authData.username();}
@@ -117,6 +113,21 @@ public class GameService {
             throw new BadRequestException(e.getMessage());
         }
         return true;
+    }
+
+    public void observeGame(String authToken, int gameID) throws UnauthorizedException, BadRequestException {
+        AuthData authData;
+        GameData gameData;
+        try {
+            authData = authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
+        try {
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     public void clear() {

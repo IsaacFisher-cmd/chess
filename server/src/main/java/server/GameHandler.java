@@ -61,5 +61,17 @@ public class GameHandler {
         return "{}";
     }
 
+    public Object observeGame(Request req, Response resp) throws BadRequestException, UnauthorizedException {
+        String authToken = req.headers("authorization");
+
+        record ObserveRequest(int gameID) {}
+        ObserveRequest data = new Gson().fromJson(req.body(), ObserveRequest.class);
+
+        gameService.observeGame(authToken, data.gameID());
+
+        resp.status(200);
+        return "{}";
+    }
+
 
 }

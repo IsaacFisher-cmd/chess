@@ -6,8 +6,6 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
-import websocket.*;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
@@ -57,6 +55,7 @@ public class Server {
         Spark.get("/game", gameHandler::listGames);
         Spark.post("/game", gameHandler::createGame);
         Spark.put("/game", gameHandler::joinGame);
+        Spark.put("/game/observe", gameHandler::observeGame);
 
         Spark.exception(BadRequestException.class, this::badRequestExceptionHandler);
         Spark.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);

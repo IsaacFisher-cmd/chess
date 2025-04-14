@@ -111,7 +111,7 @@ public class PostloginREPL {
                         printGames();
                         break;
                     }
-                    if (server.joinGame(observeGame.gameID(), null)) {
+                    if (server.observeGame(observeGame.gameID())) {
                         out.println("You have joined the game as an observer");
                         inGame = true;
                         server.connectWS();

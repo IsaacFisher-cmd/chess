@@ -88,6 +88,12 @@ public class HttpCommunicator {
         return !resp.containsKey("Error");
     }
 
+    public boolean observeGame(int gameID) {
+        var jsonBody = new Gson().toJson(Map.of("gameID", gameID));
+        Map resp = request("PUT", "/game/observe", jsonBody);
+        return !resp.containsKey("Error");
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
