@@ -55,7 +55,6 @@ public class PostloginREPL {
                         break;
                     }
                     refreshGames();
-                    int joinId = Integer.parseInt(input[1]);
                     int gameNum = Integer.parseInt(input[1]);
                     if (games.isEmpty() || games.size() <= gameNum) {
                         refreshGames();
@@ -72,7 +71,7 @@ public class PostloginREPL {
                     GameData joinGame = games.get(gameNum);
                     ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
                     if (joinGame == null) {
-                        out.println("Game with ID " + joinId + " not found");
+                        out.println("Game with ID " + gameNum + " not found");
                         break;
                     }
                     if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
@@ -93,20 +92,25 @@ public class PostloginREPL {
                         printObserve();
                         break;
                     }
-                    int gameObservedNum = Integer.parseInt(input[1]);
-                    if (games.isEmpty() || games.size() <= gameObservedNum) {
+                    int gameObservedId = Integer.parseInt(input[1]);
+                    if (games.isEmpty() || games.size() <= gameObservedId) {
                         refreshGames();
                         if (games.isEmpty()) {
                             out.println("Error: please first create a game");
                             break;
                         }
-                        if (games.size() <= gameObservedNum) {
+                        if (games.size() <= gameObservedId) {
                             out.println("Error: that Game ID does not exist");
                             printGames();
                             break;
                         }
                     }
-                    GameData observeGame = games.get(gameObservedNum);
+                    GameData observeGame = games.get(gameObservedId);
+                    if (observeGame == null) {
+                        out.println("Error: Game with ID " + gameObservedId + " does not exist");
+                        printGames();
+                        break;
+                    }
                     if (server.joinGame(observeGame.gameID(), null)) {
                         out.println("You have joined the game as an observer");
                         inGame = true;
@@ -116,7 +120,7 @@ public class PostloginREPL {
                         gameplayREPL.run();
                         break;
                     } else {
-                        out.println("Game does not exist");
+                        out.println("Error joining game as observer");
                         printObserve();
                         break;
                     }

@@ -100,6 +100,10 @@ public class GameService {
         String whiteUser = gameData.whiteUsername();
         String blackUser = gameData.blackUsername();
 
+        if(color == null){
+            return true;
+        }
+
         if (Objects.equals(color, "WHITE")) {
             if (whiteUser != null && !whiteUser.equals(authData.username())){ return false; }// Spot taken by someone else
             else {whiteUser = authData.username();}
