@@ -71,7 +71,13 @@ public class GameplayREPL {
                 case "highlight":
                     if (input.length == 2 && input[1].matches("[a-h][1-8]")) {
                         ChessPosition position = new ChessPosition(input[1].charAt(1) - '0', input[1].charAt(0) - ('a'-1));
-                        boardPrinter.printBoard(color, position);
+                        ChessPiece piece = game.getBoard().getPiece(position);
+
+                        if (piece == null) {
+                            out.println("No piece at that position. Please select a square with a piece.");
+                        } else {
+                            boardPrinter.printBoard(color, position);
+                        }
                     }
                     else {
                         out.println("Please provide a coordinate (ex: 'c3')");

@@ -21,7 +21,7 @@ public class WebsocketCommunicator extends Endpoint {
     public WebsocketCommunicator(String serverDomain) throws Exception {
         try {
             URI uri = new URI("ws://" + serverDomain + "/ws");
-            System.out.println("Connecting to WebSocket URI: " + uri);
+            //System.out.println("Connecting to WebSocket URI: " + uri);
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
@@ -63,7 +63,7 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     private void printMoveMade(ChessGame game) {
-        System.out.print(ERASE_LINE + "\r\nA move has been made\n");
+        System.out.print(ERASE_LINE + "\r\n \n");
         GameplayREPL.boardPrinter.updateGame(game);
         GameplayREPL.boardPrinter.printBoard(GameplayREPL.color, null);
         System.out.print("[IN-GAME] >>> ");

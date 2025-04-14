@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.BadRequestException;
@@ -116,13 +118,16 @@ public class WebsocketHandler {
             }
 
             if (game.game().getTeamTurn().equals(userColor)) {
-                game.game().makeMove(command.getMove());
+                ChessMove move = command.getMove();
+                game.game().makeMove(move);
+                String fromPos = toAlgebraic(move.getStartPosition());
+                String toPos = toAlgebraic(move.getEndPosition());
 
                 Notification notif;
                 ChessGame.TeamColor opponentColor = userColor == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-
+                String opponentName = (opponentColor == ChessGame.TeamColor.WHITE) ? game.whiteUsername() : game.blackUsername();
                 if (game.game().isInCheckmate(opponentColor)) {
-                    notif = new Notification("Checkmate! %s wins!".formatted(auth.username()));
+                    notif = new Notification("Checkmate! %s wins! %s loses!".formatted(auth.username(), opponentName));
                     game.game().setGameOver(true);
                 }
                 else if (game.game().isInStalemate(opponentColor)) {
@@ -130,12 +135,12 @@ public class WebsocketHandler {
                     game.game().setGameOver(true);
                 }
                 else if (game.game().isInCheck(opponentColor)) {
-                    notif = new Notification("A move has been made by %s, %s is now in check!".formatted(auth.username(), opponentColor.toString()));
+                    notif = new Notification("A move has been made by %s, %s is now in check!".formatted(auth.username(), opponentName));
                 }
                 else {
-                    notif = new Notification("A move has been made by %s".formatted(auth.username()));
+                    notif = new Notification("A move has been made by %s, from %s to %s.".formatted(auth.username(), fromPos, toPos));
                 }
-                broadcastMessage(session, notif);
+                broadcastMessage(session, notif, true);
 
                 Server.gameService.updateGame(auth.authToken(), game);
 
@@ -154,6 +159,12 @@ public class WebsocketHandler {
             System.out.println("****** error: " + e.getMessage() + "  " + command.getMove().toString());
             sendError(session, new Error("Error: invalid move (you might need to specify a promotion piece)"));
         }
+    }
+
+    private String toAlgebraic(ChessPosition pos) {
+        char file = (char) ('a' + pos.getColumn() - 1);
+        int rank = pos.getRow();
+        return "" + file + rank;
     }
 
     private void handleLeave(Session session, Leave command) throws IOException {
