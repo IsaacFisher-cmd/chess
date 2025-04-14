@@ -98,26 +98,33 @@ public class HttpCommunicator {
         return request(method, endpoint, null);
     }
 
+    private HttpURLConnection createConnection(String method, String endpoint, String body) throws IOException, URISyntaxException {
+        URI uri = new URI(baseURL + endpoint);
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod(method);
+
+        // Add Authorization header if available
+        if (facade.getAuthToken() != null) {
+            http.addRequestProperty("authorization", facade.getAuthToken());
+        }
+
+        // If there's a body, set content type and write it to the connection
+        if (body != null) {
+            http.setDoOutput(true);
+            http.addRequestProperty("Content-Type", "application/json");
+            try (var outputStream = http.getOutputStream()) {
+                outputStream.write(body.getBytes());
+            }
+        }
+
+        http.connect();
+        return http;
+    }
+
     private Map request(String method, String endpoint, String body) {
         Map respMap;
         try {
-            URI uri = new URI(baseURL + endpoint);
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod(method);
-
-            if (facade.getAuthToken() != null) {
-                http.addRequestProperty("authorization", facade.getAuthToken());
-            }
-
-            if (!Objects.equals(body, null)) {
-                http.setDoOutput(true);
-                http.addRequestProperty("Content-Type", "application/json");
-                try (var outputStream = http.getOutputStream()) {
-                    outputStream.write(body.getBytes());
-                }
-            }
-
-            http.connect();
+            HttpURLConnection http = createConnection(method, endpoint, body);
 
             try {
                 if (http.getResponseCode() == 401) {
@@ -147,23 +154,7 @@ public class HttpCommunicator {
     private String requestString(String method, String endpoint, String body) {
         String resp;
         try {
-            URI uri = new URI(baseURL + endpoint);
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod(method);
-
-            if (facade.getAuthToken() != null) {
-                http.addRequestProperty("authorization", facade.getAuthToken());
-            }
-
-            if (!Objects.equals(body, null)) {
-                http.setDoOutput(true);
-                http.addRequestProperty("Content-Type", "application/json");
-                try (var outputStream = http.getOutputStream()) {
-                    outputStream.write(body.getBytes());
-                }
-            }
-
-            http.connect();
+            HttpURLConnection http = createConnection(method, endpoint, body);
 
             try {
                 if (http.getResponseCode() == 401) {
