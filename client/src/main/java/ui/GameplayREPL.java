@@ -33,8 +33,9 @@ public class GameplayREPL {
         this.server = server;
         this.game = gameData.game();
         this.gameID = gameData.gameID();
-        this.color = color;
-        this.boardPrinter = new BoardPrinter(game);
+        GameplayREPL.color = color;
+
+        boardPrinter = new BoardPrinter(game);
     }
 
     public void run() {
@@ -149,10 +150,4 @@ public class GameplayREPL {
             default -> null;
         };
     }
-
-    private void confirmResign() {
-
-    }
-
-
 }

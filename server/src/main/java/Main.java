@@ -1,7 +1,7 @@
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import server.Server;
-import websocket.ServerConfig;
+
 
 public class Main {
 
@@ -13,5 +13,6 @@ public class Main {
         System.out.println("♕ 240 Chess Server");
         Server server = new Server();
         int port = server.run(8080);
+        server.clearDB();
     }
 }
