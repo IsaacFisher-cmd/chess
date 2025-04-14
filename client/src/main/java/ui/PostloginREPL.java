@@ -183,13 +183,4 @@ public class PostloginREPL {
     private void printObserve() {
         out.println("observe <ID> - observe a game");
     }
-
-    private GameData findGameById(int gameId) {
-        for (GameData game : games) {
-            if (game.gameID() == gameId) {
-                return game;
-            }
-        }
-        return null;
-    }
 }
