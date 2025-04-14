@@ -49,42 +49,7 @@ public class PostloginREPL {
                     out.printf("Created game: %s%n", input[1]);
                     break;
                 case "join":
-                    if (input.length != 3 || !input[1].matches("\\d") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
-                        out.println("Please provide a game ID and color choice");
-                        printJoin();
-                        break;
-                    }
-                    refreshGames();
-                    int gameNum = Integer.parseInt(input[1]);
-                    if (games.isEmpty() || games.size() <= gameNum) {
-                        refreshGames();
-                        if (games.isEmpty()) {
-                            out.println("Error: please first create a game");
-                            break;
-                        }
-                        if (games.size() <= gameNum) {
-                            out.println("Error: that Game ID does not exist");
-                            printGames();
-                            break;
-                        }
-                    }
-                    GameData joinGame = games.get(gameNum);
-                    ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-                    if (joinGame == null) {
-                        out.println("Game with ID " + gameNum + " not found");
-                        break;
-                    }
-                    if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
-                        out.println("You have joined the game");
-                        inGame = true;
-                        server.connectWS();
-                        server.connect(joinGame.gameID(), color);
-                        GameplayREPL gameplayREPL = new GameplayREPL(server, joinGame, color);
-                        gameplayREPL.run();
-                    } else {
-                        out.println("Game does not exist or color taken");
-                        printJoin();
-                    }
+                    handleJoin(input, inGame);
                     break;
                 case "observe":
                     if (input.length != 2 || !input[1].matches("\\d")) {
@@ -134,6 +99,45 @@ public class PostloginREPL {
         if (!loggedIn) {
             PreloginREPL preloginREPL = new PreloginREPL(server);
             preloginREPL.run();
+        }
+    }
+
+    private void handleJoin(String[] input, boolean inGame) {
+        if (input.length != 3 || !input[1].matches("\\d") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
+            out.println("Please provide a game ID and color choice");
+            printJoin();
+            return;
+        }
+        refreshGames();
+        int gameNum = Integer.parseInt(input[1]);
+        if (games.isEmpty() || games.size() <= gameNum) {
+            refreshGames();
+            if (games.isEmpty()) {
+                out.println("Error: please first create a game");
+                return;
+            }
+            if (games.size() <= gameNum) {
+                out.println("Error: that Game ID does not exist");
+                printGames();
+                return;
+            }
+        }
+        GameData joinGame = games.get(gameNum);
+        ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        if (joinGame == null) {
+            out.println("Game with ID " + gameNum + " not found");
+            return;
+        }
+        if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
+            out.println("You have joined the game");
+            inGame = true;
+            server.connectWS();
+            server.connect(joinGame.gameID(), color);
+            GameplayREPL gameplayREPL = new GameplayREPL(server, joinGame, color);
+            gameplayREPL.run();
+        } else {
+            out.println("Game does not exist or color taken");
+            printJoin();
         }
     }
 
