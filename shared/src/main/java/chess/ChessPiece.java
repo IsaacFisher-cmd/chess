@@ -71,7 +71,7 @@ public class ChessPiece {
     public boolean onBoard(ChessPosition checkPos){
         int checkRow = checkPos.getRow();
         int checkCol = checkPos.getColumn();
-        return ((1 <= checkRow) & (checkRow <= 8) & (1 <= checkCol) & (checkCol <= 8));
+        return ((1 <= checkRow) && (checkRow <= 8) && (1 <= checkCol) && (checkCol <= 8));
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
@@ -89,6 +89,30 @@ public class ChessPiece {
                         if(target == null || target.getTeamColor() != myTeam){
                             moves.add(new ChessMove(myPosition, newPos, null));
                         }
+                    }
+                }
+                break;
+            case QUEEN:
+                directions = new int[][] {{1, -1},{1, 0},{1, 1},{0, -1},{0, 1},{-1, -1},{-1, 0},{-1, 1}};
+                for (int[] dir : directions){
+                    int i = 1;
+                    int b = 1;
+                    while(b == 1){
+                        ChessPosition newPos = new ChessPosition(myPosition.getRow() + dir[0] * i,myPosition.getColumn() + dir[1] * i);
+                        if(onBoard(newPos)){
+                            ChessPiece target = board.getPiece(newPos);
+                            if(target == null){
+                                moves.add(new ChessMove(myPosition, newPos, null));
+                            } else if (target.getTeamColor() != myTeam){
+                                moves.add(new ChessMove(myPosition, newPos, null));
+                                b = 0;
+                            } else{
+                                b = 0;
+                            }
+                        } else {
+                            b = 0;
+                        }
+                        i++;
                     }
                 }
                 break;
