@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -67,12 +68,30 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+    public boolean onBoard(ChessPosition checkPos){
+        int checkRow = checkPos.getRow();
+        int checkCol = checkPos.getColumn();
+        return ((1 <= checkRow) & (checkRow <= 8) & (1 <= checkCol) & (checkCol <= 8));
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPiece piece = board.getPiece(myPosition);
-        switch (piece.pieceType){
+        ChessGame.TeamColor myTeam = board.getPiece(myPosition).pieceTeam;
+        int[][] directions;
+        switch(piece.pieceType){
             case KING:
-
+                directions = new int[][] {{1, -1},{1, 0},{1, 1},{0, -1},{0, 1},{-1, -1},{-1, 0},{-1, 1}};
+                for (int[] dir : directions){
+                    ChessPosition newPos = new ChessPosition(myPosition.getRow() + dir[0],myPosition.getColumn() + dir[1]);
+                    if(onBoard(newPos)){
+                        ChessPiece target = board.getPiece(newPos);
+                        if(target == null || target.getTeamColor() != myTeam){
+                            moves.add(new ChessMove(myPosition, newPos, null));
+                        }
+                    }
+                }
+                break;
         }
         return moves;
     }
