@@ -54,6 +54,11 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(myPosition);
+        switch (piece.pieceType){
+            case KING:
+
+        }
         return moves;
     }
 }

@@ -12,7 +12,6 @@ public class ChessBoard {
 
     public ChessBoard() {
         this.board = new ChessPiece[8][8];
-        this.resetBoard();
     }
 
     /**
