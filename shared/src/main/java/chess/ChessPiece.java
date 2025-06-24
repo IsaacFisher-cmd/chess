@@ -116,6 +116,30 @@ public class ChessPiece {
                     }
                 }
                 break;
+            case BISHOP:
+                directions = new int[][] {{1, -1},{1, 1},{-1, -1},{-1, 1}};
+                for (int[] dir : directions){
+                    int i = 1;
+                    int b = 1;
+                    while(b == 1){
+                        ChessPosition newPos = new ChessPosition(myPosition.getRow() + dir[0] * i,myPosition.getColumn() + dir[1] * i);
+                        if(onBoard(newPos)){
+                            ChessPiece target = board.getPiece(newPos);
+                            if(target == null){
+                                moves.add(new ChessMove(myPosition, newPos, null));
+                            } else if (target.getTeamColor() != myTeam){
+                                moves.add(new ChessMove(myPosition, newPos, null));
+                                b = 0;
+                            } else{
+                                b = 0;
+                            }
+                        } else {
+                            b = 0;
+                        }
+                        i++;
+                    }
+                }
+                break;
         }
         return moves;
     }
