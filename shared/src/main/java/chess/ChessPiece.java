@@ -140,6 +140,18 @@ public class ChessPiece {
                     }
                 }
                 break;
+            case KNIGHT:
+                directions = new int[][] {{2, -1},{1, -2},{2, 1},{1, 2},{-2, -1},{-1, -2},{-2, 1},{-1, 2}};
+                for (int[] dir : directions){
+                    ChessPosition newPos = new ChessPosition(myPosition.getRow() + dir[0],myPosition.getColumn() + dir[1]);
+                    if(onBoard(newPos)){
+                        ChessPiece target = board.getPiece(newPos);
+                        if(target == null || target.getTeamColor() != myTeam){
+                            moves.add(new ChessMove(myPosition, newPos, null));
+                        }
+                    }
+                }
+                break;
         }
         return moves;
     }
