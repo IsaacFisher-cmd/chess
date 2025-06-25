@@ -176,6 +176,51 @@ public class ChessPiece {
                     }
                 }
                 break;
+            case PAWN:
+                int dir = (myTeam == ChessGame.TeamColor.WHITE) ? 1 : -1;
+                int start = (myTeam == ChessGame.TeamColor.WHITE) ? 2 : 7;
+                int promote = (myTeam == ChessGame.TeamColor.WHITE) ? 8 : 1;
+
+                ChessPosition singleMove = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn());
+                if(onBoard(singleMove) && board.getPiece(singleMove) == null){
+                    if(singleMove.getRow() == promote){
+                        for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                            moves.add(new ChessMove(myPosition, singleMove, promotion));
+                        }
+                    } else {
+                        moves.add(new ChessMove(myPosition, singleMove, null));
+                    }
+                }
+
+                if(myPosition.getRow() == start){
+                    ChessPosition doubleMove = new ChessPosition(myPosition.getRow() + 2 * dir, myPosition.getColumn());
+                    if(onBoard(doubleMove) && board.getPiece(singleMove) == null && board.getPiece(doubleMove) == null){
+                        if(doubleMove.getRow() == promote){
+                            for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                                moves.add(new ChessMove(myPosition, doubleMove, promotion));
+                            }
+                        } else {
+                            moves.add(new ChessMove(myPosition, doubleMove, null));
+                        }
+                    }
+                }
+
+                for(int i = -1; i < 2; i+=2){
+                    ChessPosition cap = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn() + i);
+                    if(onBoard(cap)){
+                        ChessPiece target = board.getPiece(cap);
+                        if(target != null && target.pieceTeam != myTeam){
+                            if(cap.getRow() == promote){
+                                for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                                    moves.add(new ChessMove(myPosition, cap, promotion));
+                                }
+                            } else {
+                                moves.add(new ChessMove(myPosition, cap, null));
+                            }
+                        }
+                    }
+                }
+                break;
         }
         return moves;
     }
