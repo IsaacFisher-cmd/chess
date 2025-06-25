@@ -110,7 +110,11 @@ public class ChessPiece {
         }
     }
 
-    private void pawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, ChessGame.TeamColor myTeam, int dir, int start, int promote){
+    private void pawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, ChessGame.TeamColor myTeam){
+        int dir = (myTeam == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        int start = (myTeam == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        int promote = (myTeam == ChessGame.TeamColor.WHITE) ? 8 : 1;
+
         ChessPosition singleMove = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn());
         if(onBoard(singleMove) && board.getPiece(singleMove) == null){
             if(singleMove.getRow() == promote){
@@ -139,14 +143,12 @@ public class ChessPiece {
             ChessPosition cap = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn() + i);
             if(onBoard(cap)){
                 ChessPiece target = board.getPiece(cap);
-                if(target != null && target.pieceTeam != myTeam){
-                    if(cap.getRow() == promote){
-                        for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                if(target != null && target.pieceTeam != myTeam && cap.getRow() == promote){
+                    for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
                             moves.add(new ChessMove(myPosition, cap, promotion));
-                        }
-                    } else {
-                        moves.add(new ChessMove(myPosition, cap, null));
                     }
+                } else if(target != null && target.pieceTeam != myTeam) {
+                    moves.add(new ChessMove(myPosition, cap, null));
                 }
             }
         }
@@ -179,11 +181,7 @@ public class ChessPiece {
                 multiMoves(board, myPosition, moves, myTeam, directions);
                 break;
             case PAWN:
-                int dir = (myTeam == ChessGame.TeamColor.WHITE) ? 1 : -1;
-                int start = (myTeam == ChessGame.TeamColor.WHITE) ? 2 : 7;
-                int promote = (myTeam == ChessGame.TeamColor.WHITE) ? 8 : 1;
-
-                pawnMoves(board, myPosition, moves, myTeam, dir, start, promote);
+                pawnMoves(board, myPosition, moves, myTeam);
                 break;
         }
         return moves;
