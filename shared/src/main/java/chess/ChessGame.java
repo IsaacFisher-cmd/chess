@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -35,6 +37,20 @@ public class ChessGame {
         gameTurn = team;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return gameTurn == chessGame.gameTurn && Objects.equals(gameBoard, chessGame.gameBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameTurn, gameBoard);
+    }
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -51,7 +67,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return null;
+        Collection<ChessMove> vMoves = new ArrayList<>();
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
+        for(ChessMove move : moves){
+            ChessPiece tempPiece = gameBoard.getPiece(move.getEndPosition());
+            gameBoard.addPiece(move.getEndPosition(), piece);
+            gameBoard.addPiece(startPosition, null);
+            if(!isInCheck(piece.getTeamColor())){
+                vMoves.add(move);
+            }
+            gameBoard.addPiece(startPosition, piece);
+            gameBoard.addPiece(move.getEndPosition(), tempPiece);
+        }
+        return vMoves;
     }
 
     /**
