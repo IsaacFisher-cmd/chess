@@ -90,7 +90,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
+        int b = 0;
+        for(ChessMove vMove : validMoves(move.getStartPosition())){
+            if(vMove == move){
+                b++;
+            }
+        }
+        if(b != 0){
+            gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            gameBoard.addPiece(move.getStartPosition(), null);
+        } else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**
@@ -132,7 +143,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return false;
+        return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 
     /**
