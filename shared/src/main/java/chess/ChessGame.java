@@ -69,6 +69,9 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> vMoves = new ArrayList<>();
         ChessPiece piece = gameBoard.getPiece(startPosition);
+        if(piece == null){
+            return vMoves;
+        }
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
         for(ChessMove move : moves){
             ChessPiece tempPiece = gameBoard.getPiece(move.getEndPosition());
@@ -90,17 +93,33 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        int b = 0;
+        boolean valid = false;
         for(ChessMove vMove : validMoves(move.getStartPosition())){
-            if(vMove == move){
-                b++;
+            if(vMove.equals(move)){
+                valid = true;
             }
         }
-        if(b != 0){
-            gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
-            gameBoard.addPiece(move.getStartPosition(), null);
-        } else {
+        if(!valid){
             throw new InvalidMoveException();
+        }
+        if(!gameBoard.getPiece(move.getStartPosition()).getTeamColor().equals(gameTurn)){
+            throw new InvalidMoveException();
+        }
+        if(valid){
+            ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+            if(move.getPromotionPiece() == null){
+                gameBoard.addPiece(move.getEndPosition(), piece);
+                gameBoard.addPiece(move.getStartPosition(), null);
+            } else {
+                gameBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+                gameBoard.addPiece(move.getStartPosition(), null);
+            }
+
+            if(gameTurn.equals(TeamColor.WHITE)){
+                setTeamTurn(TeamColor.BLACK);
+            } else {
+                setTeamTurn(TeamColor.WHITE);
+            }
         }
     }
 

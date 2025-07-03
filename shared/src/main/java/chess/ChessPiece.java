@@ -118,7 +118,7 @@ public class ChessPiece {
         ChessPosition singleMove = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn());
         if(onBoard(singleMove) && board.getPiece(singleMove) == null){
             if(singleMove.getRow() == promote){
-                for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                for(PieceType promotion : List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP)){
                     moves.add(new ChessMove(myPosition, singleMove, promotion));
                 }
             } else {
@@ -130,7 +130,7 @@ public class ChessPiece {
             ChessPosition doubleMove = new ChessPosition(myPosition.getRow() + 2 * dir, myPosition.getColumn());
             if(onBoard(doubleMove) && board.getPiece(singleMove) == null && board.getPiece(doubleMove) == null){
                 if(doubleMove.getRow() == promote){
-                    for(PieceType promotion : List.of(pieceType.QUEEN, pieceType.ROOK, pieceType.KNIGHT, pieceType.BISHOP)){
+                    for(PieceType promotion : List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP)){
                         moves.add(new ChessMove(myPosition, doubleMove, promotion));
                     }
                 } else {
