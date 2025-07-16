@@ -4,14 +4,14 @@ import model.GameData;
 
 import java.util.Collection;
 
-public class GameDAO {
-    void clear(){}
+public interface GameDAO {
+    void clear();
 
-    void createGame(){}
+    void createGame();
 
-    GameData getGame(int gameID){}
+    GameData getGame(int gameID);
 
-    Collection<GameData> listGames(){}
+    Collection<GameData> listGames();
 
-    void updateGame(){}
+    void updateGame();
 }
