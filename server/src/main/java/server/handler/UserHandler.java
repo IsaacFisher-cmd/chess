@@ -17,8 +17,8 @@ import java.util.Map;
 public class UserHandler {
     private final UserService userService;
 
-    public UserHandler(){
-        this.userService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO());
+    public UserHandler(UserService service){
+        this.userService = service;
     }
 
     public Object register(Request req, Response res) throws DataAccessException{
@@ -63,6 +63,7 @@ public class UserHandler {
         Gson gson = new Gson();
         try {
             String authToken = req.headers("authorization");
+            System.out.println("logout with " + authToken);
             userService.logout(authToken);
             res.status(200);
             return "{}";

@@ -19,8 +19,8 @@ public class Server {
     UserService userService = new UserService(userDAO, authDAO);
     GameService gameService = new GameService(gameDAO, authDAO);
 
-    UserHandler userHandler = new UserHandler();
-    GameHandler gameHandler = new GameHandler();
+    UserHandler userHandler = new UserHandler(userService);
+    GameHandler gameHandler = new GameHandler(gameService);
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -33,6 +33,7 @@ public class Server {
         Spark.post("/session", userHandler::login);
         Spark.delete("/session", userHandler::logout);
         Spark.get("/game", gameHandler::listGames);
+        Spark.post("/game", gameHandler::createGame);
         //This line initializes the server and can be removed once you have a functioning endpoint
 
         Spark.awaitInitialization();
@@ -48,6 +49,7 @@ public class Server {
         Gson gson = new Gson();
         try {
             userService.clear();
+            gameService.clear();
             res.status(200);
             return "{}";
         } catch (DataAccessException e) {

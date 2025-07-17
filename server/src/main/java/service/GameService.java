@@ -6,8 +6,10 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import request.GameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.GameResult;
 import result.ListResult;
 import result.LoginResult;
 import result.RegisterResult;
@@ -29,6 +31,18 @@ public class GameService {
         }
 
         return new ListResult(gameDAO.listGames());
+    }
+
+    public GameResult createGame(String authToken, GameRequest request) throws DataAccessException{
+        if(request.gameName() == null){
+            throw new DataAccessException("bad request");
+        }
+
+        if(authDAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
+        }
+
+        return new GameResult(gameDAO.createGame(request.gameName()));
     }
 
     public void clear() throws DataAccessException{
