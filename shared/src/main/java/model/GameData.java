@@ -2,5 +2,18 @@ package model;
 
 import chess.ChessGame;
 
-public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
+public class GameData {
+    private int gameID;
+    private String gameName;
+    public String whiteUsername;
+    public String blackUsername;
+    private ChessGame game;
+
+    public GameData(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame game){
+        this.gameID = gameID;
+        this.gameName = gameName;
+        this.whiteUsername = whiteUsername;
+        this.blackUsername = blackUsername;
+        this.game = game;
+    }
 }

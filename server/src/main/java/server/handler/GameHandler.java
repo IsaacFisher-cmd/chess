@@ -6,6 +6,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import request.GameRequest;
+import request.JoinRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.GameResult;
@@ -56,6 +57,28 @@ public class GameHandler {
                 res.status(400);
             } else if (e.getMessage().contains("unauthorized")) {
                 res.status(401);
+            } else {
+                res.status(500);
+            }
+            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+        }
+    }
+
+    public Object joinGame(Request req, Response res) throws DataAccessException {
+        Gson gson = new Gson();
+        try {
+            String authToken = req.headers("authorization");
+            JoinRequest request = gson.fromJson(req.body(), JoinRequest.class);
+            gameService.joinGame(authToken, request);
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e) {
+            if (e.getMessage().contains("bad")) {
+                res.status(400);
+            } else if (e.getMessage().contains("unauthorized")) {
+                res.status(401);
+            } else if (e.getMessage().contains("taken")){
+                res.status(403);
             } else {
                 res.status(500);
             }

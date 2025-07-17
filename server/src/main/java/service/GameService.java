@@ -7,6 +7,7 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import request.GameRequest;
+import request.JoinRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.GameResult;
@@ -43,6 +44,28 @@ public class GameService {
         }
 
         return new GameResult(gameDAO.createGame(request.gameName()));
+    }
+
+    public void joinGame(String authToken, JoinRequest request) throws DataAccessException{
+        if(gameDAO.getGame(request.gameID()) == null){
+            throw new DataAccessException("bad request");
+        }
+
+
+        if(!"WHITE".equals(request.playerColor()) && !"BLACK".equals(request.playerColor())){
+            throw new DataAccessException("bad request");
+        }
+
+        if(gameDAO.getPlayer(request.gameID(), request.playerColor()) != null){
+            throw new DataAccessException("already taken");
+        }
+
+        if(authDAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
+        }
+
+        String username = authDAO.getUsername(authToken);
+        gameDAO.addPlayer(request.gameID(), request.playerColor(), username);
     }
 
     public void clear() throws DataAccessException{
