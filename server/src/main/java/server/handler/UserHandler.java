@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -51,6 +52,23 @@ public class UserHandler {
             if (e.getMessage().contains("bad")) {
                 res.status(400);
             } else if (e.getMessage().contains("unauthorized")) {
+                res.status(401);
+            } else {
+                res.status(500);
+            }
+            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+        }
+    }
+
+    public Object logout(Request req, Response res) throws DataAccessException{
+        Gson gson = new Gson();
+        try {
+            LogoutRequest request = gson.fromJson(req.body(), LogoutRequest.class);
+            userService.logout();
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e) {
+            if (e.getMessage().contains("unauthorized")) {
                 res.status(401);
             } else {
                 res.status(500);

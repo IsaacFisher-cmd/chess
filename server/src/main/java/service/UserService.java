@@ -6,6 +6,7 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -59,6 +60,16 @@ public class UserService {
         authDAO.createAuth(new AuthData(token,username));
 
         return new LoginResult(username, token);
+    }
+
+    public void logout(LogoutRequest request) throws DataAccessException{
+        String authToken = request.authToken();
+
+        if(authDAO.getAuth(authToken) == null){
+            throw new DataAccessException("unauthorized");
+        }
+
+        authDAO.removeAuth(authToken);
     }
 
     public void clear() throws DataAccessException{
