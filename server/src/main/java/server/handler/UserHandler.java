@@ -5,7 +5,6 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import request.LoginRequest;
-import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -22,7 +21,7 @@ public class UserHandler {
         this.userService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO());
     }
 
-    public Object register(Request req, Response res) throws Exception{
+    public Object register(Request req, Response res) throws DataAccessException{
         Gson gson = new Gson();
         try {
             RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
@@ -63,8 +62,8 @@ public class UserHandler {
     public Object logout(Request req, Response res) throws DataAccessException{
         Gson gson = new Gson();
         try {
-            LogoutRequest request = gson.fromJson(req.body(), LogoutRequest.class);
-            userService.logout();
+            String authToken = req.headers("authorization");
+            userService.logout(authToken);
             res.status(200);
             return "{}";
         } catch (DataAccessException e) {

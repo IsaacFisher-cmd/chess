@@ -2,7 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import server.handler.GameHandler;
 import server.handler.UserHandler;
+import service.GameService;
 import service.UserService;
 import spark.*;
 
@@ -12,10 +14,13 @@ public class Server {
 
     UserDAO userDAO = new MemoryUserDAO();
     AuthDAO authDAO = new MemoryAuthDAO();
+    GameDAO gameDAO = new MemoryGameDAO();
 
     UserService userService = new UserService(userDAO, authDAO);
+    GameService gameService = new GameService(gameDAO, authDAO);
 
     UserHandler userHandler = new UserHandler();
+    GameHandler gameHandler = new GameHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -27,6 +32,7 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/session", userHandler::login);
         Spark.delete("/session", userHandler::logout);
+        Spark.get("/game", gameHandler::listGames);
         //This line initializes the server and can be removed once you have a functioning endpoint
 
         Spark.awaitInitialization();
