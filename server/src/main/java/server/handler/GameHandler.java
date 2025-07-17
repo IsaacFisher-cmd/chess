@@ -34,13 +34,13 @@ public class GameHandler {
             ListResult result = gameService.listGames(authToken);
             res.status(200);
             return gson.toJson(result);
-        } catch (DataAccessException e) {
-            if (e.getMessage().contains("unauthorized")) {
+        } catch (DataAccessException E) {
+            if (E.getMessage().contains("unauthorized")) {
                 res.status(401);
             } else {
                 res.status(500);
             }
-            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+            return gson.toJson(Map.of("message", "Error: " + E.getMessage()));
         }
     }
 
@@ -53,10 +53,10 @@ public class GameHandler {
             res.status(200);
             return gson.toJson(result);
         } catch (DataAccessException e) {
-            if (e.getMessage().contains("bad")) {
-                res.status(400);
-            } else if (e.getMessage().contains("unauthorized")) {
+            if (e.getMessage().contains("unauthorized")) {
                 res.status(401);
+            } else if (e.getMessage().contains("request")) {
+                res.status(400);
             } else {
                 res.status(500);
             }
