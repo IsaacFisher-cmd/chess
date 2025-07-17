@@ -40,4 +40,9 @@ public class UserService {
 
         return new RegisterResult(user.username(), token);
     }
+
+    public void clear() throws DataAccessException{
+        userDAO.clear();
+        authDAO.clear();
+    }
 }

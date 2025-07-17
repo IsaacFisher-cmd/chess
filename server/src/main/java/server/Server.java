@@ -1,12 +1,12 @@
 package server;
 
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import com.google.gson.Gson;
+import dataaccess.*;
 import server.handler.UserHandler;
 import service.UserService;
 import spark.*;
+
+import java.util.Map;
 
 public class Server {
 
@@ -24,6 +24,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", userHandler::register);
+        Spark.delete("/db", this::clear);
         //This line initializes the server and can be removed once you have a functioning endpoint
 
         Spark.awaitInitialization();
@@ -33,5 +34,17 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private Object clear(Request req, Response res){
+        Gson gson = new Gson();
+        try {
+            userService.clear();
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+        }
     }
 }
