@@ -25,12 +25,12 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void removeAuth(String authToken){
+    public void removeAuth(String authToken) throws DataAccessException{
         auths.remove(authToken);
     }
 
     @Override
-    public String getUsername(String authToken){
+    public String getUsername(String authToken) throws DataAccessException{
         return auths.get(authToken).username();
     }
 }
