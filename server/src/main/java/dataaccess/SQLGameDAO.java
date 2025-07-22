@@ -6,6 +6,7 @@ import model.GameData;
 import model.UserData;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,12 +86,16 @@ public class SQLGameDAO implements GameDAO{
         String jGame = new Gson().toJson(game);
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sql)) {
+            try (var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, gameName);
                 preparedStatement.setString(2, jGame);
                 preparedStatement.executeUpdate();
                 try(var gameId = preparedStatement.getGeneratedKeys()) {
-                    return gameId.getInt(1);
+                    if(gameId.next()) {
+                        return gameId.getInt(1);
+                    } else {
+                        throw new DataAccessException("failed");
+                    }
                 }
             }
         } catch (SQLException e) {
