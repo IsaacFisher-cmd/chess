@@ -60,7 +60,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public UserData getUser(String username) throws DataAccessException{
-        String sql = "SELECT username, password, email FROM  WHERE username = ?";
+        String sql = "SELECT username, password, email FROM users WHERE username = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);

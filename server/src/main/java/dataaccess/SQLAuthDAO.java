@@ -13,7 +13,7 @@ public class SQLAuthDAO implements AuthDAO{
 
     private final String[] authStatements = {
             """
-            CREATE TABLE IF NOT EXISTS auth (
+            CREATE TABLE IF NOT EXISTS auths (
             'token' VARCHAR(255) NOT NULL,
             'username' VARCHAR(255) NOT NULL,
             PRIMARY KEY ('token')
@@ -35,7 +35,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public void createAuth(AuthData authData) throws DataAccessException {
-        String sql = "INSERT INTO auth (token, username) VALUES (?, ?)";
+        String sql = "INSERT INTO auths (token, username) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authData.authToken());
@@ -48,7 +48,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public void clear() throws DataAccessException{
-        String sql = "TRUNCATE TABLE auth";
+        String sql = "TRUNCATE TABLE auths";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.executeUpdate();
@@ -59,7 +59,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException{
-        String sql = "SELECT token, username FROM auth WHERE token = ?";
+        String sql = "SELECT token, username FROM auths WHERE token = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
@@ -76,7 +76,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public void removeAuth(String authToken) throws DataAccessException{
-        String sql = "DELETE FROM auth WHERE token = ?";
+        String sql = "DELETE FROM auths WHERE token = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
@@ -88,7 +88,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public String getUsername(String authToken) throws DataAccessException{
-        String sql = "SELECT username FROM auth WHERE token = ?";
+        String sql = "SELECT username FROM auths WHERE token = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
