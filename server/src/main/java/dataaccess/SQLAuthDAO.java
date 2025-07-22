@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class SQLAuthDAO implements AuthDAO{
 
     public SQLAuthDAO() throws DataAccessException{
-        configureDatabase();
+        configureAuthDatabase();
     }
 
     private final String[] authStatements = {
@@ -21,7 +21,7 @@ public class SQLAuthDAO implements AuthDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureAuthDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : authStatements) {

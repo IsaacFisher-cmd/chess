@@ -13,7 +13,7 @@ import java.util.List;
 public class SQLGameDAO implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException{
-        configureDatabase();
+        configureGameDatabase();
     }
 
     private final String[] gameStatements = {
@@ -29,7 +29,7 @@ public class SQLGameDAO implements GameDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureGameDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : gameStatements) {
@@ -129,8 +129,8 @@ public class SQLGameDAO implements GameDAO{
     public String getPlayer(int gameId, String playerColor) throws DataAccessException{
         if(playerColor.equals("WHITE")){
             String sql = "SELECT white FROM games WHERE id = ?";
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var preparedStatement = conn.prepareStatement(sql)) {
+            try (var conn = DatabaseManager.getConnection();
+                 var preparedStatement = conn.prepareStatement(sql)) {
                     preparedStatement.setInt(1, gameId);
                     try (var returnStatement = preparedStatement.executeQuery()){
                         if(returnStatement.next()){
@@ -138,14 +138,14 @@ public class SQLGameDAO implements GameDAO{
                         }
                         return null;
                     }
-                }
+
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());
             }
         } else {
             String sql = "SELECT black FROM games WHERE id = ?";
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var preparedStatement = conn.prepareStatement(sql)) {
+            try (var conn = DatabaseManager.getConnection();
+                 var preparedStatement = conn.prepareStatement(sql)) {
                     preparedStatement.setInt(1, gameId);
                     try (var returnStatement = preparedStatement.executeQuery()){
                         if(returnStatement.next()){
@@ -153,7 +153,7 @@ public class SQLGameDAO implements GameDAO{
                         }
                         return null;
                     }
-                }
+
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());
             }

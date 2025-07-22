@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class SQLUserDAO implements UserDAO{
 
     public SQLUserDAO() throws DataAccessException{
-        configureDatabase();
+        configureUserDatabase();
     }
 
     private final String[] userStatements = {
@@ -22,7 +22,7 @@ public class SQLUserDAO implements UserDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureUserDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : userStatements) {
