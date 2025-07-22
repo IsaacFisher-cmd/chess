@@ -5,9 +5,7 @@ import model.AuthData;
 
 import java.sql.SQLException;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-
-public class SQLAuthDAO {
+public class SQLAuthDAO implements AuthDAO{
 
     public SQLAuthDAO() throws DataAccessException{
         configureDatabase();
@@ -89,7 +87,20 @@ public class SQLAuthDAO {
         }
     }
 
-    public String getUsername(String authToken){
-        return auths.get(authToken).username();
+    public String getUsername(String authToken) throws DataAccessException{
+        String sql = "SELECT username FROM auth WHERE token = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, authToken);
+                try (var returnStatement = preparedStatement.executeQuery()){
+                    if(returnStatement.next()){
+                        return returnStatement.getString("username");
+                    }
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 }
