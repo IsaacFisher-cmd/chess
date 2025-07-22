@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLGameDAO {
+public class SQLGameDAO implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException{
         configureDatabase();
@@ -22,8 +22,8 @@ public class SQLGameDAO {
             `name` VARCHAR(255) NOT NULL,
             `white` VARCHAR(255) DEFAULT NULL,
             `black` VARCHAR(255) DEFAULT NULL,
-            `game` TEXT
-            PRIMARY KEY ('id')
+            `game` TEXT,
+            PRIMARY KEY (`id`)
             )
             """
     };
@@ -157,9 +157,27 @@ public class SQLGameDAO {
 
     public void addPlayer(int gameId, String playerColor, String username) throws DataAccessException{
         if(playerColor.equals("WHITE")){
-            games.get(gameId).whiteUsername = username;
+            String sql = "UPDATE games SET white = ? WHERE id = ?";
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameId);
+                    preparedStatement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
         } else {
-            games.get(gameId).blackUsername = username;
+            String sql = "UPDATE games SET black = ? WHERE id = ?";
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameId);
+                    preparedStatement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
         }
     }
 }

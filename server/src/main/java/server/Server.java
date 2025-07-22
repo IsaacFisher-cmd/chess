@@ -12,18 +12,41 @@ import java.util.Map;
 
 public class Server {
 
-    UserDAO userDAO = new SQLUserDAO();
-    AuthDAO authDAO = new SQLAuthDAO();
-    GameDAO gameDAO = new SQLGameDAO();
+    UserDAO userDAO;
+
+    {
+        try {
+            userDAO = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    AuthDAO authDAO;
+
+    {
+        try {
+            authDAO = new SQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    GameDAO gameDAO;
+
+    {
+        try {
+            gameDAO = new SQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     UserService userService = new UserService(userDAO, authDAO);
     GameService gameService = new GameService(gameDAO, authDAO);
 
     UserHandler userHandler = new UserHandler(userService);
     GameHandler gameHandler = new GameHandler(gameService);
-
-    public Server() throws DataAccessException {
-    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
