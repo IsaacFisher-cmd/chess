@@ -18,11 +18,11 @@ public class SQLGameDAO {
     private final String[] gameStatements = {
             """
             CREATE TABLE IF NOT EXISTS games (
-            'id' int NOT NULL AUTO_INCREMENT,
-            'name' VARCHAR(255) NOT NULL,
-            'white' VARCHAR(255) DEFAULT NULL,
-            'black' VARCHAR(255) DEFAULT NULL,
-            'game' TEXT
+            `id` int NOT NULL AUTO_INCREMENT,
+            `name` VARCHAR(255) NOT NULL,
+            `white` VARCHAR(255) DEFAULT NULL,
+            `black` VARCHAR(255) DEFAULT NULL,
+            `game` TEXT
             PRIMARY KEY ('id')
             )
             """
@@ -42,7 +42,7 @@ public class SQLGameDAO {
     }
 
     public void clear() throws DataAccessException{
-        String sql = "TRUNCATE TABLE game";
+        String sql = "TRUNCATE TABLE games";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.executeUpdate();
@@ -55,11 +55,31 @@ public class SQLGameDAO {
     public List<GameData> listGames() throws DataAccessException{
         List<GameData> games = new ArrayList<>();
 
-        String sql = "SELECT id, name, white, black, game FROM game"
+        String sql = "SELECT id, name, white, black, game FROM games";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                try (var returnStatement = preparedStatement.executeQuery()) {
+                    while (returnStatement.next()){
+                        GameData gameData = new GameData(
+                                returnStatement.getInt("id"),
+                                returnStatement.getString("name"),
+                                returnStatement.getString("white"),
+                                returnStatement.getString("black"),
+                                new Gson().fromJson(returnStatement.getString("game"), ChessGame.class)
+                        );
+                        games.add(gameData);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return games;
     }
 
     public int createGame(String gameName) throws DataAccessException{
-        String sql = "INSERT INTO game (name, game) VALUES (?, ?)";
+        String sql = "INSERT INTO games (name, game) VALUES (?, ?)";
 
         ChessGame game = new ChessGame();
         String jGame = new Gson().toJson(game);
@@ -69,6 +89,9 @@ public class SQLGameDAO {
                 preparedStatement.setString(1, gameName);
                 preparedStatement.setString(2, jGame);
                 preparedStatement.executeUpdate();
+                try(var gameId = preparedStatement.getGeneratedKeys()) {
+                    return gameId.getInt(1);
+                }
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -76,14 +99,59 @@ public class SQLGameDAO {
     }
 
     public GameData getGame(int gameId) throws DataAccessException{
-        return games.get(gameId);
+        String sql = "SELECT id, name, white, black, game FROM games WHERE id = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setInt(1, gameId);
+                try (var returnStatement = preparedStatement.executeQuery()){
+                    if(returnStatement.next()){
+                        return new GameData(
+                                returnStatement.getInt("id"),
+                                returnStatement.getString("name"),
+                                returnStatement.getString("white"),
+                                returnStatement.getString("black"),
+                                new Gson().fromJson(returnStatement.getString("game"), ChessGame.class)
+                        );
+                    }
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public String getPlayer(int gameId, String playerColor) throws DataAccessException{
         if(playerColor.equals("WHITE")){
-            return games.get(gameId).whiteUsername;
+            String sql = "SELECT white FROM games WHERE id = ?";
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setInt(1, gameId);
+                    try (var returnStatement = preparedStatement.executeQuery()){
+                        if(returnStatement.next()){
+                            return returnStatement.getString("white");
+                        }
+                        return null;
+                    }
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
         } else {
-            return games.get(gameId).blackUsername;
+            String sql = "SELECT black FROM games WHERE id = ?";
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setInt(1, gameId);
+                    try (var returnStatement = preparedStatement.executeQuery()){
+                        if(returnStatement.next()){
+                            return returnStatement.getString("black");
+                        }
+                        return null;
+                    }
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
         }
     }
 
