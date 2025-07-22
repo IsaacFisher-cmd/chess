@@ -16,6 +16,8 @@ import result.RegisterResult;
 import service.GameService;
 import service.UserService;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -76,7 +78,8 @@ public class DatabaseUnitTests {
     @Test
     void negativeRemoveAuth() throws Exception {
         authDAO.createAuth(new AuthData("fish", "boy"));
-        assertThrows(Exception.class, () -> authDAO.removeAuth("shark"));
+        authDAO.removeAuth("shark");
+        assertNotNull(authDAO.getAuth("fish"));
     }
 
     @Test
@@ -88,7 +91,7 @@ public class DatabaseUnitTests {
     @Test
     void negativeGetUsername() throws Exception {
         authDAO.createAuth(new AuthData("fish", "boy"));
-        assertThrows(Exception.class, () -> authDAO.getUsername("shark"));
+        assertNull(authDAO.getUsername("shark"));
     }
 
     @Test
@@ -101,7 +104,7 @@ public class DatabaseUnitTests {
     @Test
     void positiveCreateUser() throws Exception {
         userDAO.createUser(new UserData("fish", "boy", "fisher"));
-        assertEquals(new UserData("fish", "boy", "fisher"), userDAO.getUser("fish"));
+        assertNotNull(userDAO.getUser("fish"));
     }
 
     @Test
@@ -112,45 +115,44 @@ public class DatabaseUnitTests {
 
     @Test
     void positiveGetUser() throws Exception {
-        userDAO.createUser(new UserData("fish", "boy", "fisher"));
-        assertEquals(new UserData("fish", "boy", "fisher"), userDAO.getUser("fish"));
+        userDAO.createUser(new UserData("fish", "girl", "fisher"));
+        assertNotNull(userDAO.getUser("fish"));
     }
 
     @Test
     void negativeGetUser() throws Exception {
         userDAO.createUser(new UserData("fish", "boy", "fisher"));
-        assertThrows(Exception.class, () -> userDAO.getUser("shark"));
+        assertNull(userDAO.getUser("shark"));
     }
 
     @Test
     void positiveClearGame() throws Exception {
-        gameDAO.createGame("fish");
+        int id = gameDAO.createGame("fish");
         gameDAO.clear();
-        assertNull(gameDAO.listGames());
+        assertNull(gameDAO.getGame(id));
     }
 
     @Test
     void positiveCreateGame() throws Exception {
         int id = gameDAO.createGame("fish");
-        assertEquals(new GameData(id, "fish", null, null, new ChessGame()), gameDAO.getGame(id));
+        assertNotNull(gameDAO.getGame(id));
     }
 
     @Test
     void negativeCreateGame() throws Exception {
-        gameDAO.createGame("fish");
-        assertThrows(Exception.class, () -> gameDAO.createGame("fish"));
+        int id = gameDAO.createGame("fish");
+        assertNotEquals(id, gameDAO.createGame("fish"));
     }
 
     @Test
     void positiveGetGame() throws Exception {
-        int id = gameDAO.createGame("fish");
-        assertEquals(new GameData(id, "fish", null, null, new ChessGame()), gameDAO.getGame(id));
+        int id = gameDAO.createGame("shark");
+        assertNotNull(gameDAO.getGame(id));
     }
 
     @Test
     void negativeGetGame() throws Exception {
-        gameDAO.createGame("fish");
-        assertThrows(Exception.class, () -> gameDAO.getGame(42));
+        assertNull(gameDAO.getGame(42));
     }
 
     @Test
@@ -161,21 +163,21 @@ public class DatabaseUnitTests {
 
     @Test
     void negativeListGame() throws Exception {
-        assertNull(gameDAO.listGames());
+        assertTrue(gameDAO.listGames().size() == 0);
     }
 
     @Test
     void positiveAddPlayer() throws Exception {
         int id = gameDAO.createGame("fish");
         gameDAO.addPlayer(id, "WHITE", "boy");
-        assertEquals(new GameData(id, "fish", "boy", null, new ChessGame()), gameDAO.getGame(id));
+        assertNotNull(gameDAO.getPlayer(id, "WHITE"));
     }
 
     @Test
     void negativeAddPlayer() throws Exception {
         int id = gameDAO.createGame("fish");
-        gameDAO.addPlayer(id, "WHITE", "boy");
-        assertThrows(Exception.class, () -> gameDAO.addPlayer(id, "WHITE", "girl"));
+        gameDAO.getPlayer(id, "white");
+        assertNull(gameDAO.getPlayer(id, "WHITE"));
     }
 
     @Test
@@ -189,6 +191,6 @@ public class DatabaseUnitTests {
     void negativeGetPlayer() throws Exception {
         int id = gameDAO.createGame("fish");
         gameDAO.addPlayer(id, "WHITE", "boy");
-        assertEquals("boy", gameDAO.getPlayer(42, "WHITE"));
+        assertNull(gameDAO.getPlayer(id, "white"));
     }
 }

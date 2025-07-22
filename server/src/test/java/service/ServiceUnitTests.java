@@ -5,6 +5,7 @@ import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 import request.GameRequest;
 import request.JoinRequest;
 import request.LoginRequest;
@@ -53,7 +54,7 @@ public class ServiceUnitTests {
 
     @Test
     void positiveLogin() throws Exception {
-        RegisterRequest req = new RegisterRequest("fish","boy", "fish@boy.com");
+        RegisterRequest req = new RegisterRequest("fish",BCrypt.hashpw("boy", BCrypt.gensalt()), "fish@boy.com");
         userService.register(req);
         LoginResult res = userService.login(new LoginRequest("fish", "boy"));
 
