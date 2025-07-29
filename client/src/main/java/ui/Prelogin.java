@@ -1,6 +1,8 @@
 package ui;
 
 import exception.ResponseException;
+import request.RegisterRequest;
+import result.RegisterResult;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -27,7 +29,14 @@ public class Prelogin{
 
             try{
                 result = eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if(result.equals("loggedin")) {
+                    System.out.println("nice");
+                    Postlogin postlogin = new Postlogin(serverURL, server, result);
+                    postlogin.run();
+                    break;
+                } else {
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -38,7 +47,7 @@ public class Prelogin{
 
     public String eval(String input) {
         try{
-            var tokens = input.toLowerCase().split(" "):
+            var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd){
@@ -53,9 +62,10 @@ public class Prelogin{
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length() == 3) {
-            server.register();
-
+        if (3 == params.length) {
+            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResult result = server.register(request);
+            return result.authToken();
         }
     }
 
@@ -64,4 +74,6 @@ public class Prelogin{
 
         }
     }
+
+
 }
