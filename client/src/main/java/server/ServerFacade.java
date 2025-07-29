@@ -111,4 +111,14 @@ public class ServerFacade {
         var path = "/game";
         return this.makeRequest("GET", path, null, ListResult.class, authToken);
     }
+
+    public GameResult create(String authToken, GameRequest request) throws ResponseException{
+        var path = "/game";
+        return this.makeRequest("POST", path, request, GameResult.class, authToken);
+    }
+
+    public void join(String authToken, JoinRequest request) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("PUT", path, request, null, authToken);
+    }
 }
