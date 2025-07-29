@@ -1,10 +1,8 @@
 package ui;
 
 import exception.ResponseException;
-import request.LoginRequest;
-import request.RegisterRequest;
-import result.LoginResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -58,7 +56,7 @@ public class Postlogin {
                         return;
                     }
                     default -> {
-                        help();
+                        System.out.println(help());
                     }
                 }
             } catch (ResponseException e) {
@@ -67,8 +65,27 @@ public class Postlogin {
         }
     }
 
-    public String logout() throws ResponseException {
+    public void logout() throws ResponseException {
         server.logout(authToken);
+    }
+
+    public void create(String... params) throws ResponseException{
+        if (1 == params.length) {
+            GameRequest request = new GameRequest(params[0]);
+            GameResult result = server.create(authToken, request);
+            if(result.gameID() != -1){
+                System.out.println("success");
+            } else {
+                System.out.println("failed");
+            }
+        } else {
+            System.out.println("wrong");
+        }
+    }
+
+    public void list() throws ResponseException {
+        ListResult result = server.list(authToken);
+        System.out.println(result);
     }
 
     public String help() {

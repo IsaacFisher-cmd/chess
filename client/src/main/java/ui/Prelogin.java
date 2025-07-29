@@ -65,7 +65,6 @@ public class Prelogin{
             }
         } else {
             System.out.println("wrong");
-            return;
         }
     }
 
@@ -80,7 +79,6 @@ public class Prelogin{
             }
         } else {
             System.out.println("wrong");
-            return;
         }
     }
 
