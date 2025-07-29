@@ -1,6 +1,10 @@
 package ui;
 
 import exception.ResponseException;
+import request.LoginRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.RegisterResult;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -50,7 +54,7 @@ public class Postlogin {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd){
-                case "logout" -> logout(params);
+                case "logout" -> logout();
                 case "create" -> create(params);
                 case "list" -> list(params);
                 case "join" -> join(params);
@@ -63,5 +67,28 @@ public class Postlogin {
         }
     }
 
-    
+    public String logout(String... params) throws ResponseException {
+        if (3 == params.length) {
+            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResult result = server.register(request);
+            return result.authToken();
+        } else { return "failed";}
+    }
+
+    public String login(String... params) throws ResponseException {
+        if (2 == params.length) {
+            LoginRequest request = new LoginRequest(params[0], params[1]);
+            LoginResult result = server.login(request);
+            return result.authToken();
+        } else { return "failed";}
+    }
+
+    public String help() {
+        return """
+                register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                login <USERNAME> <PASSWORD> - to play chess
+                quit - playing chess
+                help - with possible commands
+                """;
+    }
 }

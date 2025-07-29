@@ -89,7 +89,7 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException{
         var path = "/user";
-        this.makeRequest("POST", path, request, RegisterResult.class, null);
+        return this.makeRequest("POST", path, request, RegisterResult.class, null);
     }
 
     public void clear() throws ResponseException{
@@ -99,11 +99,16 @@ public class ServerFacade {
 
     public LoginResult login(LoginRequest request) throws ResponseException{
         var path = "/session";
-        this.makeRequest("POST", path, request, LoginResult.class, null);
+        return this.makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public void logout(String authToken) throws ResponseException{
         var path = "/session";
         this.makeRequest("DELETE", path, null, null, authToken);
+    }
+
+    public ListResult list(String authToken) throws ResponseException{
+        var path = "/game";
+        return this.makeRequest("GET", path, null, ListResult.class, authToken);
     }
 }
