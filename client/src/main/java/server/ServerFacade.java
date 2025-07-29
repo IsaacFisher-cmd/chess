@@ -6,10 +6,13 @@ import model.GameData;
 import model.UserData;
 
 import com.google.gson.Gson;
+import request.*;
+import result.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.UUID;
 
 public class ServerFacade {
 
@@ -48,16 +51,16 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw Exception.fromJson(respErr);
+                    throw ResponseException.fromJson(respErr);
                 }
             }
 
-            throw new Exception(status, "other failure: " + status);
+            throw new ResponseException(status, "other failure: " + status);
         }
     }
 
@@ -79,41 +82,23 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 
-    void createAuth(AuthData authData);
+    public RegisterResult register(RegisterRequest request) throws ResponseException{
+        var path = "/user";
+        this.makeRequest("POST", path, request, RegisterResult.class);
+    }
 
-    void clear();
+    public void clear() throws ResponseException{
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
 
-    AuthData getAuth(String authToken);
+    public LoginRequest login(LoginRequest request) throws ResponseException{
+        var path = "/session";
+        this.makeRequest("POST", path, request, LoginResult.class);
+    }
 
-    void removeAuth(String authToken);
-
-    String getUsername(String authToken);
-
-    void clear();
-
-    void createUser(UserData userData);
-
-    UserData getUser(String username);
-
-    void clear();
-
-    List<GameData> listGames(){
-
-    };
-
-    int createGame(String gameName){
-
-    };
-
-    GameData getGame(int gameID){
-
-    };
-
-    String getPlayer(int gameID, String playerColor){
-
-    };
-
-    void addPlayer(int gameID, String playerColor, String username){
-
-    };
+    public void logout(String authToken) throws ResponseException{
+        var path = "/session";
+        this.makeRequest("DELETE", path, )
+    }
 }

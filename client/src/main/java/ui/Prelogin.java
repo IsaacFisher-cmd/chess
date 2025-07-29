@@ -1,14 +1,15 @@
 package ui;
 
 import exception.ResponseException;
-import websocket.Notification;
+import server.ServerFacade;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Prelogin implements Notification {
+public class Prelogin{
+    private ServerFacade server;
     private String serverURL;
 
     public Prelogin(String serverUrl) {
@@ -52,6 +53,13 @@ public class Prelogin implements Notification {
     }
 
     public String register(String... params) throws ResponseException {
+        if (params.length() == 3) {
+            server.register();
+
+        }
+    }
+
+    public String login(String... params) throws ResponseException {
         if (params.length() == 3) {
 
         }

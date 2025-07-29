@@ -1,22 +1,9 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import request.GameRequest;
-import request.JoinRequest;
-import request.LoginRequest;
-import request.RegisterRequest;
-import result.GameResult;
-import result.LoginResult;
-import result.RegisterResult;
-import service.GameService;
-import service.UserService;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;

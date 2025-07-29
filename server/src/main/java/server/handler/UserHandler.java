@@ -2,8 +2,6 @@ package server.handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;

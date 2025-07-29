@@ -2,19 +2,11 @@ package server.handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import request.GameRequest;
 import request.JoinRequest;
-import request.LoginRequest;
-import request.RegisterRequest;
 import result.GameResult;
 import result.ListResult;
-import result.LoginResult;
-import result.RegisterResult;
 import service.GameService;
-import service.UserService;
 import spark.Request;
 import spark.Response;
 

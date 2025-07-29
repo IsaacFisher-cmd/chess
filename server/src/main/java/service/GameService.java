@@ -3,19 +3,10 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-import model.AuthData;
-import model.UserData;
 import request.GameRequest;
 import request.JoinRequest;
-import request.LoginRequest;
-import request.RegisterRequest;
 import result.GameResult;
 import result.ListResult;
-import result.LoginResult;
-import result.RegisterResult;
-
-import java.util.UUID;
 
 public class GameService {
     private final GameDAO gameDAO;
