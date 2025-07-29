@@ -12,11 +12,9 @@ import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 
 public class Postlogin {
     private ServerFacade server;
-    private String serverURL;
     private String authToken;
 
-    public Postlogin(String serverUrl, ServerFacade s, String auth) {
-        this.serverURL = serverUrl;
+    public Postlogin(ServerFacade s, String auth) {
         this.server = s;
         this.authToken = auth;
     }
@@ -86,6 +84,16 @@ public class Postlogin {
     public void list() throws ResponseException {
         ListResult result = server.list(authToken);
         System.out.println(result);
+    }
+
+    public void join(String... params) throws ResponseException{
+        if (2 == params.length) {
+            JoinRequest request = new JoinRequest(params[1], Integer.parseInt(params[0]));
+            server.join(authToken, request);
+            new Gameplay(server).run();
+        } else {
+            System.out.println("wrong");
+        }
     }
 
     public String help() {
