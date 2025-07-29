@@ -34,16 +34,27 @@ public class Postlogin {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             try{
                 switch (cmd){
-                    case "reg" -> {
-                        logout(params);
+                    case "logout" -> {
+                        logout();
                         break;
                     }
-                    case "login" -> {
-                        login(params);
+                    case "create" -> {
+                        create(params);
+                        break;
+                    }
+                    case "list" -> {
+                        list();
+                        break;
+                    }
+                    case "join" -> {
+                        join();
+                        break;
+                    }
+                    case "observe" -> {
+                        observe(params);
                         break;
                     }
                     case "quit" -> {
-                        System.out.println("bye");
                         return;
                     }
                     default -> {
@@ -53,25 +64,6 @@ public class Postlogin {
             } catch (ResponseException e) {
                 System.out.println(e.getMessage());
             }
-        }
-    }
-
-    public String eval(String input) {
-        try{
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd){
-                case "logout" -> logout();
-                case "create" -> create(params);
-                case "list" -> list();
-                case "join" -> join(params);
-                case "observe" -> observe(params);
-                case "quit" -> "quit";
-                default -> help();
-            };
-        } catch (ResponseException e) {
-            return e.getMessage();
         }
     }
 
