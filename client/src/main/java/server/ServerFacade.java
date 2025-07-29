@@ -12,6 +12,7 @@ import result.*;
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ServerFacade {
@@ -22,12 +23,16 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if (authToken != null){
+                http.setRequestProperty("authorization", authToken);
+            }
 
             writeBody(request, http);
             http.connect();
@@ -99,6 +104,6 @@ public class ServerFacade {
 
     public void logout(String authToken) throws ResponseException{
         var path = "/session";
-        this.makeRequest("DELETE", path, )
+        this.makeRequest("DELETE", path, null, null, authToken);
     }
 }
