@@ -47,7 +47,7 @@ public class Postlogin {
                         break;
                     }
                     case "observe" -> {
-                        observe(params);
+                        observe();
                         break;
                     }
                     case "quit" -> {
@@ -94,6 +94,10 @@ public class Postlogin {
         } else {
             System.out.println("wrong");
         }
+    }
+
+    public void observe(){
+        new Gameplay(server).run();
     }
 
     public String help() {
