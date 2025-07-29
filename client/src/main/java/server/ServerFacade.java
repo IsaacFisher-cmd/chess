@@ -89,17 +89,17 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException{
         var path = "/user";
-        this.makeRequest("POST", path, request, RegisterResult.class);
+        this.makeRequest("POST", path, request, RegisterResult.class, null);
     }
 
     public void clear() throws ResponseException{
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
-    public LoginRequest login(LoginRequest request) throws ResponseException{
+    public LoginResult login(LoginRequest request) throws ResponseException{
         var path = "/session";
-        this.makeRequest("POST", path, request, LoginResult.class);
+        this.makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public void logout(String authToken) throws ResponseException{

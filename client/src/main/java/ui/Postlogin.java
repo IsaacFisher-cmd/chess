@@ -28,7 +28,7 @@ public class Postlogin {
 
             try{
                 result = eval(line);
-                if(result.equals("loggedin")) {
+                if(result.equals("joined")) {
                     System.out.println("nice");
                     Postlogin postlogin = new Postlogin(serverURL, server, result);
                     postlogin.run();
@@ -50,8 +50,11 @@ public class Postlogin {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd){
-                case "register" -> register(params);
-                case "login" -> login(params);
+                case "logout" -> logout(params);
+                case "create" -> create(params);
+                case "list" -> list(params);
+                case "join" -> join(params);
+                case "observe" -> ovserve(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -59,4 +62,6 @@ public class Postlogin {
             return e.getMessage();
         }
     }
+
+    
 }
