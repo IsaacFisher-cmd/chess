@@ -87,14 +87,18 @@ public class Postlogin {
         if (2 == params.length) {
             JoinRequest request = new JoinRequest(params[1], Integer.parseInt(params[0]));
             server.join(authToken, request);
-            new Gameplay(server).run();
+            if(params[1].equals("white")){
+                new Gameplay(server, true).run();
+            } else {
+                new Gameplay(server, false).run();
+            }
         } else {
             System.out.println("wrong");
         }
     }
 
     public void observe(){
-        new Gameplay(server).run();
+        new Gameplay(server, true).run();
     }
 
     public String help() {
