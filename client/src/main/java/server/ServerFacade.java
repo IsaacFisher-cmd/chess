@@ -1,9 +1,6 @@
 package server;
 
 import exception.ResponseException;
-import model.AuthData;
-import model.GameData;
-import model.UserData;
 
 import com.google.gson.Gson;
 import request.*;
@@ -11,9 +8,6 @@ import result.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class ServerFacade {
 

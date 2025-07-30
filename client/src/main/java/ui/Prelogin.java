@@ -58,13 +58,13 @@ public class Prelogin{
                 RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
                 RegisterResult result = server.register(request);
                 if(result == null || result.authToken() == null){
-                    System.out.println("Registration failed: invalid registration");
+                    System.out.println("register failed: invalid registration");
                 } else {
                     System.out.println("register worked, sup " + result.username());
                     new Postlogin(server, result.authToken()).run();
                 }
             } catch (ResponseException e) {
-                System.out.println("Registration failed: " + e.getMessage());
+                System.out.println("register failed: " + e.getMessage());
             }
         } else {
             System.out.println("register <USERNAME> <PASSWORD> <EMAIL>");
@@ -77,13 +77,13 @@ public class Prelogin{
                 LoginRequest request = new LoginRequest(params[0], params[1]);
                 LoginResult result = server.login(request);
                 if(result == null || result.authToken() == null){
-                    System.out.println("Login failed: invalid login");
+                    System.out.println("login failed: invalid login");
                 } else {
                     System.out.println("login worked, sup " + result.username());
                     new Postlogin(server, result.authToken()).run();
                 }
             } catch (ResponseException e) {
-                System.out.println("Login failed: " + e.getMessage());
+                System.out.println("login failed: " + e.getMessage());
             }
         } else {
             System.out.println("login <USERNAME> <PASSWORD>");

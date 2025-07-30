@@ -61,20 +61,28 @@ public class Postlogin {
     }
 
     public void logout() throws ResponseException {
-        server.logout(authToken);
+        try{
+            server.logout(authToken);
+        } catch (ResponseException e) {
+            System.out.println("logout failed: " + e.getMessage());
+        }
     }
 
     public void create(String... params) throws ResponseException{
         if (1 == params.length) {
-            GameRequest request = new GameRequest(params[0]);
-            GameResult result = server.create(authToken, request);
-            if(result.gameID() != -1){
-                System.out.println("success");
-            } else {
-                System.out.println("failed");
+            try {
+                GameRequest request = new GameRequest(params[0]);
+                GameResult result = server.create(authToken, request);
+                if(result.gameID() != -1){
+                    System.out.println("create worked, id: " + Integer.toString(result.gameID()));
+                } else {
+                    System.out.println("create failed");
+                }
+            } catch (ResponseException e) {
+                System.out.println("create failed: " + e.getMessage());
             }
         } else {
-            System.out.println("wrong");
+            System.out.println("create <NAME>");
         }
     }
 
@@ -98,20 +106,39 @@ public class Postlogin {
 
     public void join(String... params) throws ResponseException{
         if (2 == params.length) {
-            JoinRequest request = new JoinRequest(params[1], Integer.parseInt(params[0]));
-            server.join(authToken, request);
-            if(params[1].equals("white")){
-                new Gameplay(server, true).run();
-            } else {
-                new Gameplay(server, false).run();
+            try {
+                JoinRequest request = new JoinRequest(params[1], Integer.parseInt(params[0]));
+                server.join(authToken, request);
+                if(params[1].equals("white")){
+                    new Gameplay(server, true).run();
+                } else {
+                    new Gameplay(server, false).run();
+                }
+            } catch (ResponseException e) {
+                System.out.println("join failed: " + e.getMessage());
             }
         } else {
-            System.out.println("wrong");
+            System.out.println("join <ID> [WHITE|BLACK]");
         }
     }
 
     public void observe(String... params) throws ResponseException{
-        new Gameplay(server, true).run();
+        if(1 == params.length) {
+            try {
+                int id = Integer.parseInt(params[0]);
+                ListResult result = server.list(authToken);
+                var games = result.games();
+                if (id > 0 && id < games.size()){
+                    new Gameplay(server, true).run();
+                } else {
+                    System.out.println("observe failed: invalid id");
+                }
+            } catch (ResponseException e) {
+                System.out.println("observe failed: " + e.getMessage());
+            }
+        } else {
+            System.out.println("observe <ID>");
+        }
     }
 
     public String help() {
