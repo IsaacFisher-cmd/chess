@@ -40,11 +40,6 @@ public class Prelogin{
                     }
                     case "quit" -> {
                         System.out.println("bye");
-                        try{
-                            server.clear();
-                        } catch (ResponseException e) {
-                            throw new RuntimeException(e);
-                        }
                         return;
                     }
                     default -> {

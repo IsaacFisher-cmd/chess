@@ -22,7 +22,7 @@ public class SQLUserDAO implements UserDAO{
             """
     };
 
-    private void configureUserDatabase() throws DataAccessException {
+    public void configureUserDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : userStatements) {
@@ -30,9 +30,7 @@ public class SQLUserDAO implements UserDAO{
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        } catch (SQLException e) {throw new DataAccessException(e.getMessage());}
     }
 
     public void createUser(UserData userData) throws DataAccessException {

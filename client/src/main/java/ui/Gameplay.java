@@ -8,11 +8,11 @@ import static ui.EscapeSequences.*;
 
 public class Gameplay {
     private ServerFacade server;
-    private boolean TF;
+    private boolean tF;
 
     public Gameplay(ServerFacade s, boolean tf) {
         this.server = s;
-        this.TF = tf;
+        this.tF = tf;
     }
 
     public void run(){
@@ -43,7 +43,7 @@ public class Gameplay {
                 {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}
         };
 
-        if(TF){
+        if(tF){
             for (int i = 0; i < 8; i++){
                 System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(8-i) + " ");
                 for (int j = 0; j < 8; j++){
