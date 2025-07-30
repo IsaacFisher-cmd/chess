@@ -32,7 +32,7 @@ public class Postlogin {
                 switch (cmd){
                     case "logout" -> {
                         logout();
-                        break;
+                        return;
                     }
                     case "create" -> {
                         create(params);
@@ -49,9 +49,6 @@ public class Postlogin {
                     case "observe" -> {
                         observe();
                         break;
-                    }
-                    case "quit" -> {
-                        return;
                     }
                     default -> {
                         System.out.println(help());
