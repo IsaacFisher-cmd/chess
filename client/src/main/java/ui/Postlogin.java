@@ -79,7 +79,7 @@ public class Postlogin {
                     System.out.println("create failed");
                 }
             } catch (ResponseException e) {
-                System.out.println("create failed: " + e.getMessage());
+                System.out.println("create failed: bad create");
             }
         } else {
             System.out.println("create <NAME>");
@@ -107,7 +107,13 @@ public class Postlogin {
     public void join(String... params) throws ResponseException{
         if (2 == params.length) {
             try {
-                JoinRequest request = new JoinRequest(params[1], Integer.parseInt(params[0]));
+                int id = Integer.parseInt(params[0]) - 1;
+                System.out.println(id);
+                ListResult result = server.list(authToken);
+                var games = result.games();
+                int realId = games.get(id).gameID;
+                System.out.println(games.get(id).gameID);
+                JoinRequest request = new JoinRequest(params[1].toUpperCase(), realId);
                 server.join(authToken, request);
                 if(params[1].equals("white")){
                     new Gameplay(server, true).run();
@@ -115,7 +121,7 @@ public class Postlogin {
                     new Gameplay(server, false).run();
                 }
             } catch (ResponseException e) {
-                System.out.println("join failed: " + e.getMessage());
+                System.out.println("join failed: bad join");
             }
         } else {
             System.out.println("join <ID> [WHITE|BLACK]");
@@ -128,13 +134,13 @@ public class Postlogin {
                 int id = Integer.parseInt(params[0]);
                 ListResult result = server.list(authToken);
                 var games = result.games();
-                if (id > 0 && id < games.size()){
-                    new Gameplay(server, true).run();
+                if (id > 0 && id <= games.size()){
+                    new Gameplay(server, false).run();
                 } else {
                     System.out.println("observe failed: invalid id");
                 }
             } catch (ResponseException e) {
-                System.out.println("observe failed: " + e.getMessage());
+                System.out.println("observe failed: bad observe");
             }
         } else {
             System.out.println("observe <ID>");
@@ -148,7 +154,6 @@ public class Postlogin {
                 join <ID> [WHITE|BLACK] - a game
                 observe <ID> - a game
                 logout - when you are done
-                quit - playing chess
                 help - with possible commands
                 """;
     }

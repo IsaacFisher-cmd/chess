@@ -3,7 +3,7 @@ package model;
 import chess.ChessGame;
 
 public class GameData {
-    private int gameID;
+    public int gameID;
     public String gameName;
     public String whiteUsername;
     public String blackUsername;

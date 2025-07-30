@@ -17,7 +17,7 @@ public class Prelogin{
         this.server = new ServerFacade(serverUrl);
     }
 
-    public void run(){
+    public void run() {
         System.out.println("Welcome to 240 chess. Type Help to get started.");
 
         Scanner scanner = new Scanner(System.in);
@@ -40,6 +40,11 @@ public class Prelogin{
                     }
                     case "quit" -> {
                         System.out.println("bye");
+                        try{
+                            server.clear();
+                        } catch (ResponseException e) {
+                            throw new RuntimeException(e);
+                        }
                         return;
                     }
                     default -> {
@@ -64,7 +69,7 @@ public class Prelogin{
                     new Postlogin(server, result.authToken()).run();
                 }
             } catch (ResponseException e) {
-                System.out.println("register failed: " + e.getMessage());
+                System.out.println("register failed: invalid register");
             }
         } else {
             System.out.println("register <USERNAME> <PASSWORD> <EMAIL>");
@@ -83,7 +88,7 @@ public class Prelogin{
                     new Postlogin(server, result.authToken()).run();
                 }
             } catch (ResponseException e) {
-                System.out.println("login failed: " + e.getMessage());
+                System.out.println("login failed: invalid credentials");
             }
         } else {
             System.out.println("login <USERNAME> <PASSWORD>");
