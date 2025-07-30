@@ -108,11 +108,9 @@ public class Postlogin {
         if (2 == params.length) {
             try {
                 int id = Integer.parseInt(params[0]) - 1;
-                System.out.println(id);
                 ListResult result = server.list(authToken);
                 var games = result.games();
                 int realId = games.get(id).gameID;
-                System.out.println(games.get(id).gameID);
                 JoinRequest request = new JoinRequest(params[1].toUpperCase(), realId);
                 server.join(authToken, request);
                 if(params[1].equals("white")){
