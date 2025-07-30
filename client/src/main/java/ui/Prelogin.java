@@ -8,8 +8,6 @@ import server.ServerFacade;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static ui.EscapeSequences.*;
-
 public class Prelogin{
     private ServerFacade server;
     private String serverURL;
@@ -56,29 +54,39 @@ public class Prelogin{
 
     public void register(String... params) throws ResponseException {
         if (3 == params.length) {
-            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
-            RegisterResult result = server.register(request);
-            if(result.authToken() != null){
-                new Postlogin(server, result.authToken()).run();
-            } else {
-                System.out.println("failed");
+            try {
+                RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+                RegisterResult result = server.register(request);
+                if(result == null || result.authToken() == null){
+                    System.out.println("Registration failed: invalid registration");
+                } else {
+                    System.out.println("register worked, sup " + result.username());
+                    new Postlogin(server, result.authToken()).run();
+                }
+            } catch (ResponseException e) {
+                System.out.println("Registration failed: " + e.getMessage());
             }
         } else {
-            System.out.println("wrong");
+            System.out.println("register <USERNAME> <PASSWORD> <EMAIL>");
         }
     }
 
     public void login(String... params) throws ResponseException {
         if (2 == params.length) {
-            LoginRequest request = new LoginRequest(params[0], params[1]);
-            LoginResult result = server.login(request);
-            if(result.authToken() != null){
-                new Postlogin(server, result.authToken()).run();
-            } else {
-                System.out.println("failed");
+            try {
+                LoginRequest request = new LoginRequest(params[0], params[1]);
+                LoginResult result = server.login(request);
+                if(result == null || result.authToken() == null){
+                    System.out.println("Login failed: invalid login");
+                } else {
+                    System.out.println("login worked, sup " + result.username());
+                    new Postlogin(server, result.authToken()).run();
+                }
+            } catch (ResponseException e) {
+                System.out.println("Login failed: " + e.getMessage());
             }
         } else {
-            System.out.println("wrong");
+            System.out.println("login <USERNAME> <PASSWORD>");
         }
     }
 
