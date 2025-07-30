@@ -43,11 +43,11 @@ public class Postlogin {
                         break;
                     }
                     case "join" -> {
-                        join();
+                        join(params);
                         break;
                     }
                     case "observe" -> {
-                        observe();
+                        observe(params);
                         break;
                     }
                     default -> {
@@ -80,7 +80,20 @@ public class Postlogin {
 
     public void list() throws ResponseException {
         ListResult result = server.list(authToken);
-        System.out.println(result);
+        var games = result.games();
+
+        if(games == null || games.isEmpty()) {
+            System.out.println("no games");
+            return;
+        }
+
+        System.out.println("games");
+        for(int i = 0; i < games.size(); i++){
+            var game = games.get(i);
+            var white = game.whiteUsername != null ? game.whiteUsername : "empty";
+            var black = game.blackUsername != null ? game.blackUsername : "empty";
+            System.out.println(Integer.toString(i + 1) + ": " + game.gameName + " | White: " + white + " | Black: " + black);
+        }
     }
 
     public void join(String... params) throws ResponseException{
@@ -97,7 +110,7 @@ public class Postlogin {
         }
     }
 
-    public void observe(){
+    public void observe(String... params) throws ResponseException{
         new Gameplay(server, true).run();
     }
 

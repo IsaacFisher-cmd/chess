@@ -4,7 +4,7 @@ import chess.ChessGame;
 
 public class GameData {
     private int gameID;
-    private String gameName;
+    public String gameName;
     public String whiteUsername;
     public String blackUsername;
     private ChessGame game;
