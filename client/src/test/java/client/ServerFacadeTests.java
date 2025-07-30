@@ -2,7 +2,13 @@ package client;
 
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
+import request.GameRequest;
+import request.JoinRequest;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.GameResult;
+import result.ListResult;
+import result.LoginResult;
 import server.Server;
 import server.ServerFacade;
 
@@ -50,62 +56,69 @@ public class ServerFacadeTests {
 
     @Test
     void login() throws Exception{
-        var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        
-        assertTrue(authData.authToken().length() > 10);
+        facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
+        LoginResult result = facade.login(new LoginRequest("player1", "password"));
+        assertTrue(result.authToken().length() > 10);
     }
 
     @Test
     void loginF() throws Exception{
-        var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        assertThrows(Exception.class, () -> facade.login(new LoginRequest("player1", "password")));
     }
 
     @Test
     void logout() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        assertDoesNotThrow(() -> facade.logout(authData.authToken()));
     }
 
     @Test
     void logoutF() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        facade.logout(authData.authToken());
+        assertThrows(Exception.class, () -> facade.logout(authData.authToken()));
     }
 
     @Test
     void list() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        facade.create(authData.authToken(), new GameRequest("fish"));
+        ListResult result = facade.list(authData.authToken());
+        assertTrue(result.games().size() > 0);
     }
 
     @Test
     void listF() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        facade.logout(authData.authToken());
+        assertThrows(Exception.class, () -> facade.list(authData.authToken()));
     }
 
     @Test
     void create() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        GameResult result = facade.create(authData.authToken(), new GameRequest("fish"));
+        assertTrue(result.gameID() > 0);
     }
 
     @Test
     void createF() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        facade.logout(authData.authToken());
+        assertThrows(Exception.class, () -> facade.create(authData.authToken(), new GameRequest("fish")));
     }
 
     @Test
     void join() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        GameResult result = facade.create(authData.authToken(), new GameRequest("fish"));
+        assertDoesNotThrow(() -> facade.join(authData.authToken(), new JoinRequest("WHITE", result.gameID())));
     }
 
     @Test
     void joinF() throws Exception{
         var authData = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
-        assertTrue(authData.authToken().length() > 10);
+        GameResult result = facade.create(authData.authToken(), new GameRequest("fish"));
+        assertThrows(Exception.class, () -> facade.join(authData.authToken(), new JoinRequest("WHIT", result.gameID())));
     }
 }
