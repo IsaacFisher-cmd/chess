@@ -108,6 +108,10 @@ public class Postlogin {
                 int id = Integer.parseInt(params[0]) - 1;
                 ListResult result = server.list(authToken);
                 var games = result.games();
+                if (id < 0 || id >= games.size()){
+                    System.out.println("No game there");
+                    return;
+                }
                 int realId = games.get(id).gameID;
                 JoinRequest request = new JoinRequest(params[1].toUpperCase(), realId);
                 server.join(authToken, request);
