@@ -1,7 +1,9 @@
 package ui;
 
+import exception.ResponseException;
 import server.ServerFacade;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -17,7 +19,49 @@ public class Gameplay {
 
     public void run(){
         printBoard();
-        new Scanner(System.in).nextLine();
+        Scanner scanner = new Scanner(System.in);
+        while(true){
+            System.out.print("\n [GAME] >>> ");
+            String line = scanner.nextLine();
+            var tokens = line.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            try{
+                switch (cmd){
+                    case "redraw" -> {
+                        break;
+                    }
+                    case "leave" -> {
+                        return;
+                    }
+                    case "move" -> {
+                        break;
+                    }
+                    case "resign" -> {
+                        return;
+                    }
+                    case "highlight" -> {
+                        break;
+                    }
+                    default -> {
+                        System.out.println(help());
+                    }
+                }
+            } catch (ResponseException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public String help() {
+        return """
+                redraw - the board
+                leave - the game
+                move <FROM> <TO> - a piece
+                resign - the game
+                highlight - legal moves
+                help - with possible commands
+                """;
     }
 
     public void printBoard(){
