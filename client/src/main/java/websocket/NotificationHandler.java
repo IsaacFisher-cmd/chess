@@ -3,9 +3,9 @@ package websocket;
 import websocket.messages.*;
 
 public interface NotificationHandler {
-    void notify(NotificationMessage notification);
+    void load(LoadGameMessage message);
 
-    void notify(NotificationMessage notification);
+    void error(ErrorMessage message);
 
-    void notify(NotificationMessage notification);
+    void notify(NotificationMessage message);
 }
