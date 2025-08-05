@@ -1,8 +1,9 @@
-package client.websocket;
+package websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.*;
 import exception.ResponseException;
-import websocket.NotificationHandler;
+import websocket.commands.*;
 import websocket.messages.*;
 
 import javax.websocket.*;
@@ -30,8 +31,25 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, Notification.class);
-                    notificationHandler.notify(notification);
+                    Gson gson = new Gson();
+                    JsonObject obj = gson.fromJson(message, JsonObject.class);
+
+                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(message.get("serverMessageType").getAsString());
+
+                    switch (type) {
+                        case LOAD_GAME -> {
+                            LoadGameMessage load = gson.fromJson(message, LoadGameMessage.class);
+                            notificationHandler.load(load);
+                        }
+                        case ERROR -> {
+                            ErrorMessage error = gson.fromJson(message, ErrorMessage.class);
+                            notificationHandler.error(error);
+                        }
+                        case NOTIFICATION -> {
+                            NotificationMessage note = gson.fromJson(message, NotificationMessage.class);
+                            notificationHandler.notify(note);
+                        }
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -44,16 +62,16 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterPetShop(String visitorName) throws ResponseException {
+    public void ConnectGame(String visitorName) throws ResponseException {
         try {
-            var action = new Action(Action.Type.ENTER, visitorName);
+            var action = new UserGameCommand(UserGameCommand.UserGameCommandType.ENTER, visitorName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    public void leavePetShop(String visitorName) throws ResponseException {
+    public void MoveGame(String visitorName) throws ResponseException {
         try {
             var action = new Action(Action.Type.EXIT, visitorName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
@@ -63,4 +81,23 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void LeaveGame(String visitorName) throws ResponseException {
+        try {
+            var action = new Action(Action.Type.EXIT, visitorName);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            this.session.close();
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void ResignGame(String visitorName) throws ResponseException {
+        try {
+            var action = new Action(Action.Type.EXIT, visitorName);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            this.session.close();
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
 }
