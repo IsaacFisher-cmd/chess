@@ -26,29 +26,25 @@ public class Gameplay {
             var tokens = line.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            try{
-                switch (cmd){
-                    case "redraw" -> {
-                        break;
-                    }
-                    case "leave" -> {
-                        return;
-                    }
-                    case "move" -> {
-                        break;
-                    }
-                    case "resign" -> {
-                        return;
-                    }
-                    case "highlight" -> {
-                        break;
-                    }
-                    default -> {
-                        System.out.println(help());
-                    }
+            switch (cmd){
+                case "redraw" -> {
+                    break;
                 }
-            } catch (ResponseException e) {
-                System.out.println(e.getMessage());
+                case "leave" -> {
+                    return;
+                }
+                case "move" -> {
+                    break;
+                }
+                case "resign" -> {
+                    return;
+                }
+                case "highlight" -> {
+                    break;
+                }
+                default -> {
+                    System.out.println(help());
+                }
             }
         }
     }

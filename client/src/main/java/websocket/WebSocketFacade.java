@@ -35,7 +35,7 @@ public class WebSocketFacade extends Endpoint {
                     Gson gson = new Gson();
                     JsonObject obj = gson.fromJson(message, JsonObject.class);
 
-                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(message.get("serverMessageType").getAsString());
+                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(obj.get("serverMessageType").getAsString());
 
                     switch (type) {
                         case LOAD_GAME -> {
@@ -76,7 +76,6 @@ public class WebSocketFacade extends Endpoint {
         try {
             var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
-            this.session.close();
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
