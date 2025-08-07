@@ -75,6 +75,7 @@ public class WebSocketHandler {
     }
 
     public void leave(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
+        connections.broadcast(gameID, authToken, new NotificationMessage("they left"));
         connections.remove(gameID, authToken);
         String user = authDao.getUsername(authToken);
         if(gameDao.getGame(gameID).whiteUsername.equals(user)){
@@ -82,7 +83,6 @@ public class WebSocketHandler {
         } else if(gameDao.getGame(gameID).blackUsername.equals(user)){
             gameDao.addPlayer(gameID, "BLACK", null);
         }
-        connections.broadcast(gameID, authToken, new NotificationMessage("they left"));
     }
 
     public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
