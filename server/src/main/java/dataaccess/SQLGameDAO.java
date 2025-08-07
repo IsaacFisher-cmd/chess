@@ -24,6 +24,7 @@ public class SQLGameDAO implements GameDAO{
             `white` VARCHAR(255) DEFAULT NULL,
             `black` VARCHAR(255) DEFAULT NULL,
             `game` TEXT,
+            `isOver` BOOLEAN,
             PRIMARY KEY (`id`)
             )
             """
@@ -183,6 +184,21 @@ public class SQLGameDAO implements GameDAO{
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());
             }
+        }
+    }
+
+    public void updateGame(int gameId, ChessGame game) throws DataAccessException {
+        String sql = "UPDATE games SET game = ? WHERE id = ?";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                String gameJ = new Gson().toJson(game);
+                preparedStatement.setString(1, gameJ);
+                preparedStatement.setInt(2, gameId);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 }

@@ -56,4 +56,9 @@ public class MemoryGameDAO implements GameDAO{
             games.get(gameId).blackUsername = username;
         }
     }
+
+    @Override
+    public void updateGame(int gameId, ChessGame game) throws DataAccessException{
+        games.get(gameId).game = game;
+    }
 }

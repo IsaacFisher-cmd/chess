@@ -87,7 +87,13 @@ public class WebSocketHandler {
 
     public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
         GameData game = gameDao.getGame(gameID);
-        game.isOver = true;
+        String user = authDao.getUsername(authToken);
+        if(!gameDao.getGame(gameID).whiteUsername.equals(user) && !gameDao.getGame(gameID).blackUsername.equals(user)){
+            connections.whisper(gameID, authToken, new ErrorMessage("silly observer"));
+            return;
+        }
+        game.game.isOver = true;
+        gameDao.updateGame(gameID, game.game);
         connections.broadcast(gameID, null, new NotificationMessage("we done"));
     }
 
@@ -99,7 +105,7 @@ public class WebSocketHandler {
         GameData gameData = gameDao.getGame(gameID);
         ChessGame game = gameData.game;
         String user = authDao.getUsername(authToken);
-        if(gameData.isOver){
+        if(game.isOver){
             connections.whisper(gameID, authToken, new ErrorMessage("game is over"));
             return;
         }
@@ -117,22 +123,26 @@ public class WebSocketHandler {
 
         try{
             game.makeMove(move);
+            gameDao.updateGame(gameID, game);
         } catch (Exception e) {
             connections.whisper(gameID, authToken, new ErrorMessage("bad move"));
             return;
         }
 
         connections.broadcast(gameID, null, new LoadGameMessage(game));
-        connections.broadcast(gameID, authToken, new NotificationMessage("move made"));
 
         if (game.isInCheckmate(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
-            gameData.isOver = true;
+            game.isOver = true;
+            gameDao.updateGame(gameID, game);
             connections.broadcast(gameID, authToken, new NotificationMessage("checkmate"));
         } else if (game.isInStalemate(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
-            gameData.isOver = true;
+            game.isOver = true;
+            gameDao.updateGame(gameID, game);
             connections.broadcast(gameID, authToken, new NotificationMessage("stalemate"));
         } else if (game.isInCheck(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
             connections.broadcast(gameID, authToken, new NotificationMessage("check"));
+        } else {
+            connections.broadcast(gameID, authToken, new NotificationMessage("move made"));
         }
     }
 }
