@@ -101,7 +101,8 @@ public class WebSocketHandler {
         connections.broadcast(gameID, null, new NotificationMessage("we done"));
     }
 
-    public void makeMove(int gameID, String authToken, MakeMoveCommand command, Session session) throws ResponseException, DataAccessException, IOException {
+    public void makeMove(int gameID, String authToken, MakeMoveCommand command, Session session)
+            throws ResponseException, DataAccessException, IOException {
         if(authDao.getAuth(authToken) == null){
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage("bad auth")));
             return;
