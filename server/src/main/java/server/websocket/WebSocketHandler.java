@@ -1,6 +1,7 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dataaccess.AuthDAO;
 import exception.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
@@ -14,6 +15,7 @@ import websocket.commands.*;
 
 import java.io.IOException;
 import java.util.Timer;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @WebSocket
@@ -23,7 +25,22 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        var type = command.getCommandType();
+        switch(type){
+            case CONNECT -> {
+                connect(command.getGameID(),command.getAuthToken(), session);
+            }
+            case LEAVE -> {
 
+            }
+            case RESIGN -> {
+
+            }
+            case MAKE_MOVE -> {
+                
+            }
+        }
     }
 
     @OnWebSocketConnect
@@ -36,17 +53,19 @@ public class WebSocketHandler {
 
     }
 
-    public void connect(String petName, String sound) throws ResponseException {
-        connections.add()
+    public void connect(int gameID, String authToken, Session session){
+        connections.add(gameID, authToken, session);
     }
 
-    public void disconnect(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
+    public void disconnect(int gameID, String authToken) throws ResponseException {
+        connections.remove(gameID, authToken);
+    }
+
+    public void whisperGame(int gameID, String authToken, LoadGameMessage message) throws IOException{
+        connections.whisper(gameID, authToken, message);
+    }
+
+    public void broadcastMessage(int gameID, String excludeAuthToken, NotificationMessage message) throws IOException {
+        connections.broadcast(gameID, excludeAuthToken, message);
     }
 }
