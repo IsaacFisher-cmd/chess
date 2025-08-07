@@ -33,7 +33,7 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, ResponseException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         var type = command.getCommandType();
         switch(type){
@@ -44,7 +44,7 @@ public class WebSocketHandler {
                 leave(command.getGameID(), command.getAuthToken());
             }
             case RESIGN -> {
-
+                resign(command.getGameID(), command.getAuthToken());
             }
             case MAKE_MOVE -> {
 
@@ -52,14 +52,15 @@ public class WebSocketHandler {
         }
     }
 
-    public void connect(int gameID, String authToken, Session session) throws IOException, DataAccessException {
+    public void connect(int gameID, String authToken, Session session) throws IOException, DataAccessException, ResponseException {
         connections.add(gameID, authToken, session);
         ChessGame game = gameDao.getGame(gameID).game;
         LoadGameMessage msg = new LoadGameMessage(game);
-        connections.broadcast(gameID, null, msg);
+        connections.whisper(gameID, authToken, msg);
+        connections.broadcast(gameID, authToken, new NotificationMessage("we here"));
     }
 
-    public void leave(int gameID, String authToken) throws ResponseException, DataAccessException {
+    public void leave(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
         connections.remove(gameID, authToken);
         String user = authDao.getUsername(authToken);
         if(gameDao.getGame(gameID).whiteUsername.equals(user)){
@@ -67,14 +68,14 @@ public class WebSocketHandler {
         } else {
             gameDao.getGame(gameID).blackUsername = null;
         }
-        connections.broadcast(gameID, authToken, ServerMessage);
+        connections.broadcast(gameID, authToken, new NotificationMessage("they left"));
     }
 
-    public void whisperGame(int gameID, String authToken, LoadGameMessage message) throws IOException{
-        connections.whisper(gameID, authToken, message);
+    public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
+        GameData game = gameDao.getGame(gameID);
+        game.isOver = true;
+        connections.broadcast(gameID, null, new NotificationMessage("we done"));
     }
 
-    public void broadcastMessage(int gameID, String excludeAuthToken, NotificationMessage message) throws IOException {
-        connections.broadcast(gameID, excludeAuthToken, message);
-    }
+    public void makeMove()
 }
