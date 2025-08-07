@@ -1,6 +1,5 @@
 package ui;
 
-import exception.ResponseException;
 import server.ServerFacade;
 
 import java.util.Arrays;

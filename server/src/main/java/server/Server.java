@@ -49,7 +49,7 @@ public class Server {
     UserHandler userHandler = new UserHandler(userService);
     GameHandler gameHandler = new GameHandler(gameService);
 
-    private final WebSocketHandler webSocketHandler;
+    WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
