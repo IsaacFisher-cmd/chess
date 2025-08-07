@@ -35,19 +35,24 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException, ResponseException {
-        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        var type = command.getCommandType();
+        JsonObject obj = new Gson().fromJson(message, JsonObject.class);
+        UserGameCommand.CommandType type = UserGameCommand.CommandType.valueOf(obj.get("commandType").getAsString());
+
         switch(type){
             case CONNECT -> {
+                UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
                 connect(command.getGameID(), command.getAuthToken(), session);
             }
             case LEAVE -> {
+                UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
                 leave(command.getGameID(), command.getAuthToken());
             }
             case RESIGN -> {
+                UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
                 resign(command.getGameID(), command.getAuthToken());
             }
             case MAKE_MOVE -> {
+                MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(command.getGameID(), command.getAuthToken(), command);
             }
         }
@@ -86,7 +91,7 @@ public class WebSocketHandler {
         connections.broadcast(gameID, null, new NotificationMessage("we done"));
     }
 
-    public void makeMove(int gameID, String authToken, UserGameCommand command) throws ResponseException, DataAccessException, IOException {
+    public void makeMove(int gameID, String authToken, MakeMoveCommand command) throws ResponseException, DataAccessException, IOException {
         GameData gameData = gameDao.getGame(gameID);
         ChessGame game = gameData.game;
         String user = authDao.getUsername(authToken);
@@ -105,8 +110,7 @@ public class WebSocketHandler {
             return;
         }
 
-        MakeMoveCommand moveCommand = new Gson().fromJson(new Gson().toJson(command), MakeMoveCommand.class);
-        ChessMove move = moveCommand.getMove();
+        ChessMove move = command.getMove();
 
         try{
             game.makeMove(move);
@@ -114,6 +118,8 @@ public class WebSocketHandler {
             connections.whisper(gameID, authToken, new ErrorMessage("bad move"));
             return;
         }
+        
         connections.broadcast(gameID, null, new LoadGameMessage(game));
+        connections.broadcast(gameID, authToken, new NotificationMessage("move made"));
     }
 }
