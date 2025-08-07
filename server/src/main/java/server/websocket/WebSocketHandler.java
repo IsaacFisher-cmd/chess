@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dataaccess.AuthDAO;
@@ -47,12 +48,20 @@ public class WebSocketHandler {
                 resign(command.getGameID(), command.getAuthToken());
             }
             case MAKE_MOVE -> {
-
+                makeMove(command.getGameID(), command.getAuthToken(), command);
             }
         }
     }
 
     public void connect(int gameID, String authToken, Session session) throws IOException, DataAccessException, ResponseException {
+        if(gameDao.getGame(gameID) == null){
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage("no game")));
+            return;
+        }
+        if(authDao.getAuth(authToken) == null){
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage("bad auth")));
+            return;
+        }
         connections.add(gameID, authToken, session);
         ChessGame game = gameDao.getGame(gameID).game;
         LoadGameMessage msg = new LoadGameMessage(game);
@@ -77,5 +86,34 @@ public class WebSocketHandler {
         connections.broadcast(gameID, null, new NotificationMessage("we done"));
     }
 
-    public void makeMove()
+    public void makeMove(int gameID, String authToken, UserGameCommand command) throws ResponseException, DataAccessException, IOException {
+        GameData gameData = gameDao.getGame(gameID);
+        ChessGame game = gameData.game;
+        String user = authDao.getUsername(authToken);
+
+        if(gameData.isOver){
+            connections.whisper(gameID, authToken, new ErrorMessage("game is over"));
+            return;
+        }
+
+        boolean white = user.equals(gameData.whiteUsername);
+        boolean black = user.equals(gameData.blackUsername);
+        ChessGame.TeamColor turn = game.getTeamTurn();
+
+        if((turn == ChessGame.TeamColor.WHITE && !white) || (turn == ChessGame.TeamColor.BLACK && !black)){
+            connections.whisper(gameID, authToken, new ErrorMessage("not ya turn"));
+            return;
+        }
+
+        MakeMoveCommand moveCommand = new Gson().fromJson(new Gson().toJson(command), MakeMoveCommand.class);
+        ChessMove move = moveCommand.getMove();
+
+        try{
+            game.makeMove(move);
+        } catch (Exception e) {
+            connections.whisper(gameID, authToken, new ErrorMessage("bad move"));
+            return;
+        }
+        connections.broadcast(gameID, null, new LoadGameMessage(game));
+    }
 }

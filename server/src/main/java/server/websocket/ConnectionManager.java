@@ -41,7 +41,7 @@ public class ConnectionManager {
 
             if (connection.session.isOpen()) {
                 if (!authToken.equals(excludeAuthToken)) {
-                    connection.send(message.toString());
+                    connection.send(message);
                 }
             } else {
                 removeList.add(authToken);
@@ -58,7 +58,7 @@ public class ConnectionManager {
         if(connections.containsKey(gameID)){
             Connection connection = connections.get(gameID).get(authToken);
             if(connection != null && connection.session.isOpen()){
-                connection.send(message.toString());
+                connection.send(message);
             }
         }
     }
