@@ -78,15 +78,19 @@ public class WebSocketHandler {
         connections.remove(gameID, authToken);
         String user = authDao.getUsername(authToken);
         if(gameDao.getGame(gameID).whiteUsername.equals(user)){
-            gameDao.getGame(gameID).whiteUsername = null;
-        } else {
-            gameDao.getGame(gameID).blackUsername = null;
+            gameDao.addPlayer(gameID, "WHITE", null);
+        } else if(gameDao.getGame(gameID).blackUsername.equals(user)){
+            gameDao.addPlayer(gameID, "BLACK", null);
         }
         connections.broadcast(gameID, authToken, new NotificationMessage("they left"));
     }
 
     public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
         GameData game = gameDao.getGame(gameID);
+        if(gameDao.getGame(gameID).game.isOver){
+            connections.whisper(gameID, authToken, new ErrorMessage("what you gonna make it double done?"));
+            return;
+        }
         String user = authDao.getUsername(authToken);
         if(!gameDao.getGame(gameID).whiteUsername.equals(user) && !gameDao.getGame(gameID).blackUsername.equals(user)){
             connections.whisper(gameID, authToken, new ErrorMessage("silly observer"));
