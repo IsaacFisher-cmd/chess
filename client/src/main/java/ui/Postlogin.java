@@ -4,6 +4,7 @@ import exception.ResponseException;
 import request.*;
 import result.*;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -11,10 +12,12 @@ import java.util.Scanner;
 public class Postlogin {
     private ServerFacade server;
     private String authToken;
+    private String serverUrl;
 
-    public Postlogin(ServerFacade s, String auth) {
+    public Postlogin(ServerFacade s, String auth, String url) {
         this.server = s;
         this.authToken = auth;
+        this.serverUrl = url;
     }
 
     public void run(){
@@ -116,9 +119,11 @@ public class Postlogin {
                 JoinRequest request = new JoinRequest(params[1].toUpperCase(), realId);
                 server.join(authToken, request);
                 if(params[1].equals("white")){
-                    new Gameplay(server, true).run();
+                    Gameplay gp = new Gameplay(server, true, authToken, realId, serverUrl);
+                    gp.run();
                 } else {
-                    new Gameplay(server, false).run();
+                    Gameplay gp = new Gameplay(server, false, authToken, realId, serverUrl);
+                    gp.run();
                 }
             } catch (ResponseException e) {
                 System.out.println("join failed: bad join");
@@ -135,7 +140,8 @@ public class Postlogin {
                 ListResult result = server.list(authToken);
                 var games = result.games();
                 if (id > 0 && id <= games.size()){
-                    new Gameplay(server, false).run();
+                    Gameplay gp = new Gameplay(server, false, authToken, id, serverUrl);
+                    gp.run();
                 } else {
                     System.out.println("observe failed: invalid id");
                 }

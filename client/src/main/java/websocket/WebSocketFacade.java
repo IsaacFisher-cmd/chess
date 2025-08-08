@@ -19,11 +19,11 @@ public class WebSocketFacade extends Endpoint {
     GameHelper gameHelper;
 
 
-    public WebSocketFacade(String url, GameHelper gameHelper) throws ResponseException {
+    public WebSocketFacade(String url, GameHelper helper) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            this.gameHelper = gameHelper;
+            this.gameHelper = helper;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);

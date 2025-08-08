@@ -1,11 +1,10 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+import exception.ResponseException;
 import server.ServerFacade;
 import websocket.GameHelper;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -16,15 +15,22 @@ public class Gameplay implements GameHelper {
     private ServerFacade server;
     private boolean tF;
     private ChessGame game;
-    private 
+    private WebSocketFacade facade;
+    private String authToken;
+    private Integer gameID;
+    private String serverUrl;
 
-    public Gameplay(ServerFacade s, boolean tf) {
+    public Gameplay(ServerFacade s, boolean tf, String authToken, Integer gameID, String url) {
         this.server = s;
         this.tF = tf;
+        this.authToken = authToken;
+        this.gameID = gameID;
+        this.serverUrl = url;
     }
 
-    public void run(){
-        printBoard();
+    public void run() throws ResponseException {
+        facade = new WebSocketFacade(serverUrl, this);
+        facade.connect(authToken, gameID);
         Scanner scanner = new Scanner(System.in);
         while(true){
             System.out.print("\n [GAME] >>> ");
@@ -37,6 +43,7 @@ public class Gameplay implements GameHelper {
                     printBoard();
                 }
                 case "leave" -> {
+                    leaveGame();
                     return;
                 }
                 case "move" -> {
@@ -75,6 +82,24 @@ public class Gameplay implements GameHelper {
                 highlight - legal moves
                 help - with possible commands
                 """;
+    }
+
+    public void leaveGame() throws ResponseException {
+        facade.leave(authToken, gameID);
+    }
+
+    public void move(String... params){
+        if (params.length != 2 || params[0].length() != 2 || params[1].length() != 2){
+            System.out.println("move <FROM> <TO> - a piece");
+            return;
+        }
+        
+        int fCol = params[0].charAt(0) - 'a' + 1;
+        int fRow = Integer.parseInt(String.valueOf(params[0].charAt(1)));
+        int tCol = params[1].charAt(0) - 'a' + 1;
+        int tRow = Integer.parseInt(String.valueOf(params[1].charAt(1)));
+
+        facade.move(authToken, gameID, new ChessMove());
     }
 
     public void printBoard(){

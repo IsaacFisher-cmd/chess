@@ -61,7 +61,7 @@ public class Prelogin{
                     System.out.println("register failed: invalid registration");
                 } else {
                     System.out.println("register worked, sup " + result.username());
-                    new Postlogin(server, result.authToken()).run();
+                    new Postlogin(server, result.authToken(), serverURL).run();
                 }
             } catch (ResponseException e) {
                 System.out.println("register failed: invalid register");
@@ -80,7 +80,7 @@ public class Prelogin{
                     System.out.println("login failed: invalid login");
                 } else {
                     System.out.println("login worked, sup " + result.username());
-                    new Postlogin(server, result.authToken()).run();
+                    new Postlogin(server, result.authToken(), serverURL).run();
                 }
             } catch (ResponseException e) {
                 System.out.println("login failed: invalid credentials");
