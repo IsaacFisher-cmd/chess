@@ -16,14 +16,14 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     Session session;
-    NotificationHandler notificationHandler;
+    GameHelper gameHelper;
 
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, GameHelper gameHelper) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            this.notificationHandler = notificationHandler;
+            this.gameHelper = gameHelper;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -40,15 +40,15 @@ public class WebSocketFacade extends Endpoint {
                     switch (type) {
                         case LOAD_GAME -> {
                             LoadGameMessage load = gson.fromJson(message, LoadGameMessage.class);
-                            notificationHandler.load(load);
+                            gameHelper.updateGame(load.game);
                         }
                         case ERROR -> {
                             ErrorMessage error = gson.fromJson(message, ErrorMessage.class);
-                            notificationHandler.error(error);
+                            gameHelper.printMessage(error.errorMessage);
                         }
                         case NOTIFICATION -> {
                             NotificationMessage note = gson.fromJson(message, NotificationMessage.class);
-                            notificationHandler.notify(note);
+                            gameHelper.printMessage(note.message);
                         }
                     }
                 }
