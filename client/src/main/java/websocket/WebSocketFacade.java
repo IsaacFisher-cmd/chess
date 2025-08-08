@@ -62,4 +62,42 @@ public class WebSocketFacade extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
+
+    public void connect(String authToken, int gameID) throws ResponseException {
+        try{
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch(IOException e){
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void move(String authToken, int gameID, ChessMove m) throws ResponseException {
+        try{
+            MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, m);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch(IOException e){
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void leave(String authToken, int gameID) throws ResponseException {
+        try{
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            this.session.close();
+        } catch(IOException e){
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void resign(String authToken, int gameID) throws ResponseException {
+        try{
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            this.session.close();
+        } catch(IOException e){
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
 }
