@@ -6,7 +6,9 @@ import server.ServerFacade;
 import websocket.GameHelper;
 import websocket.WebSocketFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -31,6 +33,11 @@ public class Gameplay implements GameHelper {
     public void run() throws ResponseException {
         facade = new WebSocketFacade(serverUrl, this);
         facade.connect(authToken, gameID);
+        try{
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Scanner scanner = new Scanner(System.in);
         while(true){
             System.out.print("\n [GAME] >>> ");
@@ -40,7 +47,7 @@ public class Gameplay implements GameHelper {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             switch (cmd){
                 case "redraw" -> {
-                    printBoard();
+                    printBoard(false, null);
                 }
                 case "leave" -> {
                     leaveGame();
@@ -53,6 +60,7 @@ public class Gameplay implements GameHelper {
                     return;
                 }
                 case "highlight" -> {
+                    highlight(params);
                     break;
                 }
                 default -> {
@@ -65,7 +73,7 @@ public class Gameplay implements GameHelper {
     @Override
     public void updateGame(ChessGame game){
         this.game = game;
-        printBoard();
+        printBoard(false, null);
     }
 
     @Override
@@ -79,7 +87,7 @@ public class Gameplay implements GameHelper {
                 leave - the game
                 move <FROM> <TO> - a piece
                 resign - the game
-                highlight - legal moves
+                highlight <PIECE> - legal moves
                 help - with possible commands
                 """;
     }
@@ -93,16 +101,31 @@ public class Gameplay implements GameHelper {
             System.out.println("move <FROM> <TO> - a piece");
             return;
         }
-        
-        int fCol = params[0].charAt(0) - 'a' + 1;
-        int fRow = Integer.parseInt(String.valueOf(params[0].charAt(1)));
-        int tCol = params[1].charAt(0) - 'a' + 1;
-        int tRow = Integer.parseInt(String.valueOf(params[1].charAt(1)));
 
-        facade.move(authToken, gameID, new ChessMove());
     }
 
-    public void printBoard(){
+    public ChessPosition parsePos(String param){
+        int col = param.charAt(0) - 'a' + 1;
+        int row = Integer.parseInt(String.valueOf(param.charAt(1)));
+        return new ChessPosition(row, col);
+    }
+
+    public void highlight(String... params){
+        if (params.length != 1){
+            System.out.println("highlight <PIECE> - legal moves");
+            return;
+        }
+        ChessPosition pos = parsePos(params[0]);
+        ChessPiece piece = game.getBoard().getPiece(pos);
+        Collection<ChessMove> moves = piece.pieceMoves(game.getBoard(), pos);
+        Collection<ChessPosition> pauses = new ArrayList<>();
+        for(ChessMove move : moves){
+            pauses.add(move.getEndPosition());
+        }
+        printBoard(true, pauses);
+    }
+
+    public void printBoard(boolean h, Collection<ChessPosition> pauses){
         //clear screen
         System.out.print(ERASE_SCREEN);
         //letter row
@@ -110,37 +133,49 @@ public class Gameplay implements GameHelper {
         //current board
         ChessBoard board = game.getBoard();
         if(tF){
-            for (int i = 0; i < 8; i++){
-                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(8-i) + " ");
-                for (int j = 0; j < 8; j++){
+            for (int i = 8; i > 0; i--){
+                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
+                for (int j = 1; j < 9; j++){
                     String color;
+                    ChessPosition pos = new ChessPosition(i, j);
                     if ((i + j) % 2 == 0){
                         color = SET_BG_COLOR_MAGENTA;
                     } else {
                         color = SET_BG_COLOR_DARK_GREEN;
                     }
-                    ChessPiece piece = board.getPiece(new ChessPosition(i + 1, j + 1));
+                    if (h){
+                        if(pauses.contains(pos)){
+                            color = SET_BG_COLOR_RED;
+                        }
+                    }
+                    ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
                     System.out.print(color + p);
                 }
-                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(8-i) + " ");
+                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
                 System.out.print(RESET_BG_COLOR + "\n");
             }
         } else {
-            for (int i = 0; i < 8; i++){
-                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(1+i) + " ");
-                for (int j = 0; j < 8; j++){
+            for (int i = 1; i < 9; i++){
+                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
+                for (int j = 1; j < 9; j++){
                     String color;
+                    ChessPosition pos = new ChessPosition(i, j);
                     if ((i + j) % 2 == 0){
                         color = SET_BG_COLOR_MAGENTA;
                     } else {
                         color = SET_BG_COLOR_DARK_GREEN;
                     }
-                    ChessPiece piece = board.getPiece(new ChessPosition(8-i, j + 1));
+                    if (h){
+                        if(pauses.contains(pos)){
+                            color = SET_BG_COLOR_RED;
+                        }
+                    }
+                    ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
                     System.out.print(color + p);
                 }
-                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(1+i) + " ");
+                System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
                 System.out.print(RESET_BG_COLOR + "\n");
             }
         }

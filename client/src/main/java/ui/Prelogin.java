@@ -40,6 +40,7 @@ public class Prelogin{
                     }
                     case "quit" -> {
                         System.out.println("bye");
+                        server.clear();
                         return;
                     }
                     default -> {

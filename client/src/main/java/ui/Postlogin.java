@@ -140,7 +140,7 @@ public class Postlogin {
                 ListResult result = server.list(authToken);
                 var games = result.games();
                 if (id > 0 && id <= games.size()){
-                    Gameplay gp = new Gameplay(server, false, authToken, id, serverUrl);
+                    Gameplay gp = new Gameplay(server, true, authToken, id, serverUrl);
                     gp.run();
                 } else {
                     System.out.println("observe failed: invalid id");
