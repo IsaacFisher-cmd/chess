@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dataaccess.AuthDAO;
@@ -72,7 +73,13 @@ public class WebSocketHandler {
         LoadGameMessage msg = new LoadGameMessage(game);
         connections.whisper(gameID, authToken, msg);
         String user = authDao.getUsername(authToken);
-        connections.broadcast(gameID, authToken, new NotificationMessage(" " + user +" is here"));
+        String color = "observer";
+        if(gameDao.getGame(gameID).whiteUsername != null && gameDao.getGame(gameID).whiteUsername.equals(user)){
+            color = "white";
+        } else if(gameDao.getGame(gameID).blackUsername != null && gameDao.getGame(gameID).blackUsername.equals(user)){
+            color = "black";
+        }
+        connections.broadcast(gameID, authToken, new NotificationMessage(" " + user +" is here on team " + color));
     }
 
     public void leave(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
@@ -88,12 +95,14 @@ public class WebSocketHandler {
 
     public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
         GameData game = gameDao.getGame(gameID);
-        if(gameDao.getGame(gameID).game.isOver){
+        if(game.game.isOver){
             connections.whisper(gameID, authToken, new ErrorMessage(" game is over"));
             return;
         }
         String user = authDao.getUsername(authToken);
-        if(!gameDao.getGame(gameID).whiteUsername.equals(user) && !gameDao.getGame(gameID).blackUsername.equals(user)){
+        boolean white = user != null && user.equals(game.whiteUsername);
+        boolean black = user != null && user.equals(game.blackUsername);
+        if(!white && !black){
             connections.whisper(gameID, authToken, new ErrorMessage(" observers can't resign"));
             return;
         }
@@ -137,18 +146,37 @@ public class WebSocketHandler {
 
         connections.broadcast(gameID, null, new LoadGameMessage(game));
 
+        String moveS = parseMove(move);
+
+        ChessGame.TeamColor oppColor = (turn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+        String oppName = (oppColor == ChessGame.TeamColor.WHITE) ? gameData.whiteUsername : gameData.blackUsername;
+
         if (game.isInCheckmate(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
             game.isOver = true;
             gameDao.updateGame(gameID, game);
-            connections.broadcast(gameID, authToken, new NotificationMessage("checkmate"));
+            connections.broadcast(gameID, null, new NotificationMessage(oppName + " is in checkmate"));
         } else if (game.isInStalemate(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
             game.isOver = true;
             gameDao.updateGame(gameID, game);
-            connections.broadcast(gameID, authToken, new NotificationMessage("stalemate"));
+            connections.broadcast(gameID, null, new NotificationMessage(oppName + " is in stalemate"));
         } else if (game.isInCheck(turn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)){
-            connections.broadcast(gameID, authToken, new NotificationMessage("check"));
-        } else {
-            connections.broadcast(gameID, authToken, new NotificationMessage("move made"));
+            connections.broadcast(gameID, null, new NotificationMessage(oppName + " is in check"));
         }
+        connections.broadcast(gameID, authToken, new NotificationMessage(user + " made move " + moveS));
+    }
+
+    public String parseMove(ChessMove move){
+        ChessPosition f = move.getStartPosition();
+        ChessPosition t = move.getEndPosition();
+        String fr = Integer.toString(f.getRow());
+        String fc = String.valueOf((char) ('a' + f.getColumn() - 1));
+        String tr = Integer.toString(t.getRow());
+        String tc = String.valueOf((char) ('a' + t.getColumn() - 1));
+        String p = "";
+        if (move.getPromotionPiece() != null){
+            p = move.getPromotionPiece().toString();
+        }
+        return (fc + fr + " " + tc + tr + " " + p);
     }
 }

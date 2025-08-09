@@ -6,7 +6,7 @@ public class NotificationMessage extends ServerMessage{
 
     public NotificationMessage(String message){
         super(ServerMessageType.NOTIFICATION);
-        this.message = "[NOTIFICATION] " + message;
+        this.message = "\n[NOTIFICATION] " + message;
     }
 
 }

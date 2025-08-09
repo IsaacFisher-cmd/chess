@@ -97,7 +97,7 @@ public class Gameplay implements GameHelper {
         return """
                 redraw - the board
                 leave - the game
-                move <FROM> <TO> - a piece
+                move <FROM> <TO> (PROMOTE) - a piece
                 resign - the game
                 highlight <PIECE> - legal moves
                 help - with possible commands
@@ -160,7 +160,11 @@ public class Gameplay implements GameHelper {
         }
         ChessPosition pos = parsePos(params[0]);
         ChessPiece piece = game.getBoard().getPiece(pos);
-        Collection<ChessMove> moves = piece.pieceMoves(game.getBoard(), pos);
+        if(piece == null){
+            System.out.println("bad piece");
+            return;
+        }
+        Collection<ChessMove> moves = game.validMoves(pos);
         Collection<ChessPosition> pauses = new ArrayList<>();
         for(ChessMove move : moves){
             pauses.add(move.getEndPosition());
@@ -193,7 +197,7 @@ public class Gameplay implements GameHelper {
                     }
                     ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
-                    if(i == 7 || i == 8){
+                    if(piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
                         System.out.print(color + SET_TEXT_COLOR_BLACK + p);
                     } else {
                         System.out.print(color + p);
@@ -220,7 +224,7 @@ public class Gameplay implements GameHelper {
                     }
                     ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
-                    if(i == 7 || i == 8){
+                    if(piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
                         System.out.print(color + SET_TEXT_COLOR_BLACK + p);
                     } else {
                         System.out.print(color + p);
