@@ -40,6 +40,11 @@ public class Gameplay implements GameHelper {
         }
         Scanner scanner = new Scanner(System.in);
         while(true){
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             System.out.print("\n [GAME] >>> ");
             String line = scanner.nextLine();
             var tokens = line.toLowerCase().split(" ");
@@ -48,16 +53,23 @@ public class Gameplay implements GameHelper {
             switch (cmd){
                 case "redraw" -> {
                     printBoard(false, null);
+                    break;
                 }
                 case "leave" -> {
                     leaveGame();
                     return;
                 }
                 case "move" -> {
+                    moveGame(params);
                     break;
                 }
                 case "resign" -> {
-                    return;
+                    System.out.print("\n [YOU SURE?] <Y/N> >>> ");
+                    String confirm = scanner.nextLine();
+                    if(confirm.toLowerCase().equals("y")){
+                        resignGame();
+                        return;
+                    }
                 }
                 case "highlight" -> {
                     highlight(params);
@@ -96,12 +108,43 @@ public class Gameplay implements GameHelper {
         facade.leave(authToken, gameID);
     }
 
-    public void move(String... params){
-        if (params.length != 2 || params[0].length() != 2 || params[1].length() != 2){
-            System.out.println("move <FROM> <TO> - a piece");
-            return;
-        }
+    public void resignGame() throws ResponseException{
+        facade.resign(authToken, gameID);
+    }
 
+    public void moveGame(String... params){
+        if (params.length != 2 && params.length != 3){
+            System.out.println("move <FROM> <TO> (PROMOTE) - a piece");
+        }
+        try {
+            ChessPosition f = parsePos(params[0]);
+            ChessPosition t = parsePos(params[1]);
+            ChessPiece.PieceType p = null;
+            if (params.length == 3){
+                switch(params[2].toLowerCase()){
+                    case "queen" -> {
+                        p = ChessPiece.PieceType.QUEEN;
+                    }
+                    case "rook" -> {
+                        p = ChessPiece.PieceType.ROOK;
+                    }
+                    case "bishop" -> {
+                        p = ChessPiece.PieceType.BISHOP;
+                    }
+                    case "knight" -> {
+                        p = ChessPiece.PieceType.KNIGHT;
+                    }
+                    default -> {
+                        System.out.println("not a valid promotion");
+                        return;
+                    }
+                };
+            }
+            ChessMove move = new ChessMove(f, t, p);
+            facade.move(authToken, gameID, move);
+        } catch (Exception e) {
+            System.out.println("error");
+        }
     }
 
     public ChessPosition parsePos(String param){
@@ -127,7 +170,7 @@ public class Gameplay implements GameHelper {
 
     public void printBoard(boolean h, Collection<ChessPosition> pauses){
         //clear screen
-        System.out.print(ERASE_SCREEN);
+        System.out.println(ERASE_SCREEN);
         //letter row
         letters();
         //current board
@@ -150,7 +193,11 @@ public class Gameplay implements GameHelper {
                     }
                     ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
-                    System.out.print(color + p);
+                    if(i == 7 || i == 8){
+                        System.out.print(color + SET_TEXT_COLOR_BLACK + p);
+                    } else {
+                        System.out.print(color + p);
+                    }
                 }
                 System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
                 System.out.print(RESET_BG_COLOR + "\n");
@@ -173,7 +220,11 @@ public class Gameplay implements GameHelper {
                     }
                     ChessPiece piece = board.getPiece(pos);
                     String p = uiPiece(piece);
-                    System.out.print(color + p);
+                    if(i == 7 || i == 8){
+                        System.out.print(color + SET_TEXT_COLOR_BLACK + p);
+                    } else {
+                        System.out.print(color + p);
+                    }
                 }
                 System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + " " + Integer.toString(i) + " ");
                 System.out.print(RESET_BG_COLOR + "\n");
@@ -183,7 +234,7 @@ public class Gameplay implements GameHelper {
     }
 
     public void letters(){
-        String[] row = {" a ", "  b ", " c ", "  d ", " e ", "  f ", " g ", "  h  "};
+        String[] row = {" a ", "  b ", " c ", "  d ", " e ", "  f ", " g ", "  h "};
         System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY);
         for (int i = 0; i < 8; i++){
             System.out.print(row[i]);

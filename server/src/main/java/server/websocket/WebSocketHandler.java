@@ -71,13 +71,14 @@ public class WebSocketHandler {
         ChessGame game = gameDao.getGame(gameID).game;
         LoadGameMessage msg = new LoadGameMessage(game);
         connections.whisper(gameID, authToken, msg);
-        connections.broadcast(gameID, authToken, new NotificationMessage("we here"));
+        String user = authDao.getUsername(authToken);
+        connections.broadcast(gameID, authToken, new NotificationMessage(" " + user +" is here"));
     }
 
     public void leave(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
-        connections.broadcast(gameID, authToken, new NotificationMessage("they left"));
-        connections.remove(gameID, authToken);
         String user = authDao.getUsername(authToken);
+        connections.broadcast(gameID, authToken, new NotificationMessage(" " + user + " left"));
+        connections.remove(gameID, authToken);
         if(gameDao.getGame(gameID).whiteUsername.equals(user)){
             gameDao.addPlayer(gameID, "WHITE", null);
         } else if(gameDao.getGame(gameID).blackUsername.equals(user)){
@@ -88,17 +89,17 @@ public class WebSocketHandler {
     public void resign(int gameID, String authToken) throws ResponseException, DataAccessException, IOException {
         GameData game = gameDao.getGame(gameID);
         if(gameDao.getGame(gameID).game.isOver){
-            connections.whisper(gameID, authToken, new ErrorMessage("what you gonna make it double done?"));
+            connections.whisper(gameID, authToken, new ErrorMessage(" game is over"));
             return;
         }
         String user = authDao.getUsername(authToken);
         if(!gameDao.getGame(gameID).whiteUsername.equals(user) && !gameDao.getGame(gameID).blackUsername.equals(user)){
-            connections.whisper(gameID, authToken, new ErrorMessage("silly observer"));
+            connections.whisper(gameID, authToken, new ErrorMessage(" observers can't resign"));
             return;
         }
         game.game.isOver = true;
         gameDao.updateGame(gameID, game.game);
-        connections.broadcast(gameID, null, new NotificationMessage("we done"));
+        connections.broadcast(gameID, null, new NotificationMessage(" " + user + " has resigned, game is over"));
     }
 
     public void makeMove(int gameID, String authToken, MakeMoveCommand command, Session session)

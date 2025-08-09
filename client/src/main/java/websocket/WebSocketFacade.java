@@ -49,6 +49,7 @@ public class WebSocketFacade extends Endpoint {
                         case NOTIFICATION -> {
                             NotificationMessage note = gson.fromJson(message, NotificationMessage.class);
                             gameHelper.printMessage(note.message);
+                            System.out.println("[GAME] >>> ");
                         }
                     }
                 }
